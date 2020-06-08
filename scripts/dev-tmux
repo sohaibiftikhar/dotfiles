@@ -1,0 +1,42 @@
+#!/bin/sh
+
+session="${1:-dev}"
+echo "Creating session $session"
+# send-keys ' ls' \; \
+# send-keys ' ll' \; \
+# send-keys ':vsplit' C-m \; \
+
+# session="${session:-dev}"
+tmux new-session -s $session \; \
+   send-keys 'cdw && vim' C-m \; \
+   send-keys ' ls' \; \
+   send-keys ' ll' \; \
+   send-keys ':vsplit' C-m \; \
+   split-window -h -p27 \; \
+   send-keys 'cdw' C-m \; \
+   new-window \; \
+   split-window -h \; \
+   split-window -v \; \
+   send-keys 'htop' C-m \; \
+   select-pane -t1 \; \
+   split-window -v \; \
+   select-pane -t1 \; \
+   select-window -t1 \; \
+   select-pane -t1 \; \
+
+#   send-keys 'cd ~/code' C-m \; \
+#   split-window -v -p30 \; \
+#   select-pane -t1 \; \
+#   split-window -h -p75 \; \
+#   send-keys 'cdc && vim' C-m \; \
+#   select-pane -t3 \; \
+#   send-keys 'cdw' C-m \; \
+#   split-window -h -p66 \; \
+#   send-keys 'cd $HOME' C-m \; \
+#   split-window -h \; \
+#   send-keys 'htop' C-m \; \
+#   new-window \; \
+#   split-window -h -p30 \; \
+#   select-pane -t1 \; \
+#   select-window -t1 \; \
+#   select-pane -t1 \; 

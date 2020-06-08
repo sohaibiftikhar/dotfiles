@@ -1,0 +1,24 @@
+#!/bin/bash
+
+DIR=/etc/apt/sources.list.d
+SOURCES=/etc/apt/sources.list
+
+if ! test -f "$DIR/vintela.list"; then
+  echo vintela.list not found
+  exit 1
+fi
+
+if ! test -f "$DIR/dl.google.com.list"; then
+  echo dl.google.com.list not found
+  exit 1
+fi
+
+if ! test -f "$SOURCES.ubuntu.bak"; then
+  echo $SOURCES.ubuntu.bak not found
+  exit 1
+fi
+
+sudo mv $DIR/dl.google.com.list $DIR/dl.google.com.list.bak
+sudo mv $DIR/vintela.list $DIR/vintela.list.bak
+sudo cp "$SOURCES.ubuntu.bak" $SOURCES
+sudo apt update

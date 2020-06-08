@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =1
+let g:netrw_dirhist_1='/home/iftikhso/.cache/bazel/_bazel_iftikhso/install/b4d602ad13a2f1fbcb7eab3e8fcde4ce/embedded_tools/third_party/def_parser'
+let g:netrw_dirhist_0='/home/iftikhso/scripts'
+let g:netrw_dirhist_9='/home/iftikhso/code/binary_test/big/src'
+let g:netrw_dirhist_8='/home/iftikhso/.ssh'
+let g:netrw_dirhist_7='/home/iftikhso/code/binary_test/big/src'
+let g:netrw_dirhist_6='/home/iftikhso/code/binary_test/big'
+let g:netrw_dirhist_5='/home/iftikhso/code/werkstatt/werkstatt'
+let g:netrw_dirhist_4='/home/iftikhso/code/werkstatt/ci/bamboo-specs'
+let g:netrw_dirhist_3='/home/iftikhso/.vim'
+let g:netrw_dirhist_2='/home/iftikhso/code/binary_test/big'
