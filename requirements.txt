@@ -1,0 +1,5 @@
+powerline-status
+powerline_gitstatus
+neovim
+neovim-remote
+pynvim

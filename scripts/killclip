@@ -1,0 +1,1 @@
+sudo lsof -i:5556 | head -n2 | tail -n1 | awk '{print $2}' | xargs kill

@@ -1,0 +1,5 @@
+git lfs uninstall
+git reset --hard
+git rm .gitattributes
+git reset --hard
+git lfs install

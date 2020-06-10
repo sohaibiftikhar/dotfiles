@@ -1,18 +1,32 @@
+function! ale#BzlFormat(buffer) abort
+  return {
+        \   'command': 'yapf --style=/home/siftikhar/code/setup.cfg -i %t && buildifier %t',
+        \   'read_temporary_file': 1,
+        \}
+endfunction
+
+
 let g:ale_linters_explicit = 1
-let g:ale_java_eclipselsp_path = '/home/iftikhso/code/external/eclipse.jdt.ls'
-let g:ale_cpp_cquery_executable = '/home/iftikhso/code/external/cquery/build/release/bin/cquery'
-" let g:ale_java_javalsp_executable = '/home/iftikhso/code/external/java-language-server/dist/lang_server_linux.sh'
+" let g:ale_cpp_clangd_options = '--background-index=false'
+
+
+execute ale#fix#registry#Add('bzlfmt', 'ale#BzlFormat', ['bzl'], 'Bazel build file formatter')
+
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\   'python': ['black'],
-\   'go': ['gofmt']
+\   'python': ['isort', 'yapf'],
+\   'go': ['gofmt'],
+\   'rust': ['rustfmt'],
+\   'cpp': ['clang-format'],
+\   'bzl': ['bzlfmt']
 \}
 let g:ale_linters = {
-\   'python': ['pyls', 'pycodestyle', 'mypy'],
+\   'python': ['pyright', 'flake8', 'mypy', 'pydocstyle', 'isort',],
 \   'terraform': ['tflint'],
 \   'ansible': ['ansible-lint'],
-\   'cpp': ['cquery'],
-\   'go': ['gobuild', 'govet', 'golangserver']
+\   'cpp': ['clangd'],
+\   'go': ['gobuild', 'govet', 'golangserver'],
+\   'rust': ['rls']
 \}
 nmap <C-]> :ALEGoToDefinition<CR>
-nmap <leader>F :ALEFix<CR>
+nnoremap <leader>F :ALEFix<CR>

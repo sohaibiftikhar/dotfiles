@@ -1,1 +1,1 @@
-/home/iftikhso/.vimrc
+../../.vimrc

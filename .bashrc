@@ -2,18 +2,6 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
-## my-changes
-
-export XDG_HOME=$HOME/.config
-$HOME/.local/bin/powerline-daemon -q
-POWERLINE_BASH_CONTINUATION=1
-POWERLINE_BASH_SELECT=1
-export POWERLINE_PROMPT='$'
-source $HOME/.local/lib/python3.6/site-packages/powerline/bindings/bash/powerline.sh
-
-## End my-changes
-
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -30,6 +18,9 @@ shopt -s histappend
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
+
+# setting for reloading history file every time.
+export PROMPT_COMMAND="history -a; history -n"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -55,7 +46,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-force_color_prompt=yes
+#force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -97,7 +88,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # colored GCC warnings and errors
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
 alias ll='ls -alF'
@@ -127,49 +118,181 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-source ~/werkstatt/.werkstattrc.bash
+export PATH=$PATH:~/.aws/bin/
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="/home/siftikhar/python/bin:$PATH"
+
+## Path changes
+GOHOME=/usr/local/go
+GOPATH=$HOME/go
 PATH=$PATH:$HOME/scripts
-PATH=$PATH:/usr/local/go/bin
-PATH=$PATH:/home/iftikhso/go/bin
+PATH=$PATH:$HOME/.local/bin
+PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
+PATH=$GOHOME/bin:$PATH
+PATH=$GOPATH/bin:$PATH
+
+## my-changes
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+# export LC_ALL=en_US.UTF-8
+# export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+
+export XDG_HOME=$HOME/.config
+export AV_CACHE=$HOME/.cache/bazel/_bazel_siftikhar/5290b2948b376bde6190d6c97c8f2aac
+export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
+export execution="core/runtime/internal_libs/execution"
+/home/siftikhar/python/bin/powerline-daemon -q
+POWERLINE_BASH_CONTINUATION=1
+POWERLINE_BASH_SELECT=1
+export POWERLINE_PROMPT='$'
+source $HOME/python/lib/python3.7/site-packages/powerline/bindings/bash/powerline.sh
 
 ## My Bindings
-export WERKSTATT=/home/iftikhso/code/werkstatt/werkstatt
+export EDITOR=nvim
 export TERM=screen-256color
 alias '..=cd ..'
 alias '...=cd ..; cd ..'
-alias cdw="cd /home/iftikhso/code/werkstatt/werkstatt"
-alias cdc="cd /home/iftikhso/code/werkstatt/ci"
+alias clear_history="clear && tmux clear-history"
+alias av="cd $AV"
 alias gr="grep -r"
 alias ta="session=${session:-dev} tmux a -t$session"
 alias tn="dev-tmux"
 alias tk="dev-kill"
 alias ts="tmux ls"
+alias g="git "
 alias gs="git status"
 alias ga="git add"
 alias gc="git commit"
 alias gcm="git commit -m "
 alias gco="git checkout "
 alias gpull="git pull origin"
-alias gp="git pull origin "
-alias gpush="git push origin "
+alias gpr="git pull --rebase origin "
+alias gr="git rebase "
+alias gb="git branch --show-current"
+alias grc="git rebase --continue"
+alias gri="git rebase -i"
+alias queue="gh pr comment -b 'bueller r+'"
+alias gpush="git push "
+alias gpushf="git push --force-with-lease "
 alias tf="terraform"
 alias vim="nvim"
+alias cat="bat"
 alias jfmt="java -jar ~/.local/lib/java/google-java-format-1.7-all-deps.jar"
-alias buildifier="/home/iftikhso/code/bazel/buildtools/bazel-bin/buildifier/linux_amd64_stripped/buildifier"
-alias bz_compdb="/home/iftikhso/code/external/bazel-compilation-database/generate.sh"
-alias cquery="/home/iftikhso/code/external/cquery/build/release/bin/cquery"
+# alias buildifier="/home/siftikhar/code/bazel/buildtools/bazel-bin/buildifier/linux_amd64_stripped/buildifier"
+alias bz_compdb="/home/siftikhar/code/external/bazel-compilation-database/generate.sh"
+alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
+alias groovylint="$HOME/.local/lib/npm/node_modules/npm-groovy-lint/lib/index.js"
+alias myprs="gh pr list --author='@me'"
+alias bb="bazel build"
+alias bbg="bazel build --config=gcc"
+alias bbc="bazel build --config=clang-tidy"
+alias bt="bazel test"
+alias btg="bazel test --config=gcc"
+alias bbc="bazel build --config=clang-tidy"
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+
+function gpushu () {
+  branch=$(git branch --show-current)
+  git push -u origin $branch
+}
 
 function awssh () {
   ssh `aws ec2 describe-instances --filter Name=tag:Name,Values=$1 | jq -r '.Reservations[].Instances[] | select(.State.Name=="running") | .PrivateIpAddress'`
 }
 
-function awsclean () {
-  unset AWS_ACCESS_KEY_ID
-  unset AWS_SECRET_ACCESS_KEY
-  unset AWS_SESSION_TOKEN
+function clang_tidy () {
+  bazel build --config=clang-tidy //$1
 }
 
+function print_chain() {
+  base=`git branch --show-current`
+  gh pr list --search "is:open base:$base"
+}
+
+# Rebases all PRs that have the current branch as their target branch.
+function rebase_all() {
+  base=`git branch --show-current`
+  chain=`gh pr list --search "is:open base:$base" | awk '{ print $(NF-1) }'`
+  for branch in $chain; do
+    git checkout $branch && git pull --rebase origin $base && gpush -f
+  done
+  git checkout $base
+}
+
+# Rebases a chain of PRs starting from the current branch.
+# branchA <- branchB <- branchC <- ...
+function rebase_chain_deprecated() {
+  base=`git branch --show-current`
+  fbase=$base
+  chain=`gh pr list --search "is:open base:$base" | awk '{ print $(NF-1) }'`
+  for branch in $chain; do
+    echo "git checkout $branch && git pull --rebase origin $base && gpush -f"
+    # Change the base to the new branch.
+    base=$branch
+    chain+=`gh pr list --search "is:open base:$base" | awk '{ print $(NF-1) }'`
+    for b in $chain; do
+      echo $b
+    done
+  done
+  # git checkout $fbase
+}
+
+function triggerci () {
+  pr_id=${1:-$(gh pr view | awk '{ if ($1 == "number:") {print $2} }')}
+  echo "triggering $pr_id"
+  # command=${1:-build}
+  command=build
+  # jcli job $command "AVBuilds AVCI PR-$pr_id"
+  jcli job $command "avbuilds-avci PR-$pr_id"
+}
+
+function triggerciall () {
+  prs="$@"
+  for pr in $prs
+  do
+    triggerci $pr
+  done
+}
+
+function stageme () {
+  pr_id=${1:-$(gh pr view | awk '{ if ($1 == "number:") {print $2} }')}
+  echo "triggering $pr_id"
+  command=build
+  jcli job $command "avbuilds-si-staging PR-$pr_id"
+}
+
+function bzx () {
+  docker exec --user user -it `docker ps -qf 'name=bazel-av'` /bin/bash
+}
+
+# FZF Commands
+export FZF_DEFAULT_COMMAND='ag --nocolor --column -g ""'
+export FZF_ALT_C_COMMAND='fdfind -t d ""'
+export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
+
+__fzf_gb__() {
+  local cmd branch
+  cmd='command git branch --format "%(refname:short)"'
+  eval "$cmd" | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --bind=ctrl-z:ignore \
+    $FZF_DEFAULT_OPTS" $(__fzfcmd) -m "$@" | while read -r item; do
+    printf '%q ' "$item"
+  done
+  echo
+}
+fzf-git-branch() {
+  local selected="$(__fzf_gb__)"
+  READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$selected${READLINE_LINE:$READLINE_POINT}"
+  READLINE_POINT=$(( READLINE_POINT + ${#selected} ))
+}
+# bind Alt-G to search for git branches in locally checked out branches.
+bind -x '"\eg": fzf-git-branch'
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/iftikhso/.sdkman"
-# [[ -s "/home/iftikhso/.sdkman/bin/sdkman-init.sh" ]] && source "/home/iftikhso/.sdkman/bin/sdkman-init.sh"
+export SDKMAN_DIR="/home/siftikhar/.sdkman"
+[[ -s "/home/siftikhar/.sdkman/bin/sdkman-init.sh" ]] && source "/home/siftikhar/.sdkman/bin/sdkman-init.sh"

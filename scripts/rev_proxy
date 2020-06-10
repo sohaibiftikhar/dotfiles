@@ -1,0 +1,11 @@
+#!/bin/bash
+set -x
+export HOME=/Users/siftikhar
+
+ps -eaf | grep autossh | grep -v grep | awk '{print $2}' | xargs kill
+autossh -M 0 -f -T -N beefy_clip
+pid=$(ps -eaf | grep autossh | grep -v grep | awk '{print $2}')
+echo $pid
+trap "exit" INT TERM
+trap "kill $pid 0" EXIT
+$HOME/scripts/runpb

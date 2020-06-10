@@ -1,0 +1,39 @@
+#!/home/siftikhar/python/bin/python3
+"""Resets chain to commits from the combined branch based on specs in chain.
+
+By default only prints out the commands it would run. Pipe to bash to actually execute the commands.
+"""
+import os
+# pip install GitPython
+from git.repo import Repo
+
+# chain in order of existence.
+# latest commit on combined_branch maps to last branch in chain and so on.
+chain = [
+    (
+        # branch name
+        "feature/XXX/my-awesome-feature",
+        # num commits in branch.
+        1,
+    ),
+]
+combined_branch = "feature/ART-2403/gpu-endpoints-codegen"
+
+if __name__ == "__main__":
+    repo = Repo(os.environ.get("REPO_PATH"))
+    num_commits = sum(num_commits_in_branch
+                      for _, num_commits_in_branch in chain)
+    commits = list(repo.iter_commits(combined_branch, max_count=num_commits))
+    commits.reverse()
+    expected_commits = sum(num_commits for _, num_commits in chain)
+    assert len(
+        commits) == expected_commits, f"{len(commits)} != {expected_commits}"
+    print(f"git checkout {combined_branch}")
+    commit_idx = 0
+    for branch, num_commits_in_branch in chain:
+        commit = commits[commit_idx + (num_commits_in_branch - 1)]
+        commit_idx = commit_idx + num_commits_in_branch
+        print(
+            f"git checkout {branch} && git reset --hard {commit.hexsha[:10]} && git push -uf origin {branch}"
+            f" #{commit.message.strip()}")
+    print(f"git checkout {combined_branch}")
