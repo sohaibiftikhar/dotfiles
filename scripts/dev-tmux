@@ -8,7 +8,7 @@ echo "Creating session $session"
 
 # session="${session:-dev}"
 tmux new-session -s $session \; \
-   send-keys 'cd ~/code/ && vim' C-m \; \
+   send-keys 'cd ~/code/recogni/rock && vim' C-m \; \
    send-keys ' ls' \; \
    send-keys ' ll' \; \
    send-keys ':vsplit' C-m \; \

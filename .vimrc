@@ -6,12 +6,12 @@ let g:ale_cache_executable_check_failures = 1
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug  'jiangmiao/auto-pairs'
-Plug 'Shougo/deoplete.nvim'
+" Plug 'Shougo/deoplete.nvim'
 Plug 'preservim/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'rgarver/Kwbd.vim'
 Plug 'makerj/vim-pdf'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -70,10 +70,12 @@ set nu " set line numbers. can be toggled using <leader>ln
 set ignorecase
 set smartcase " enabled smart case searching
 set tagstack
-set tabstop=2 " number of visual spaces per tab
-set softtabstop=2 " number of spaces in tab when editing
-set shiftwidth=2 " number of spaces when shifting
+set tabstop=4 " number of visual spaces per tab
+set softtabstop=4 " number of spaces in tab when editing
+set shiftwidth=4 " number of spaces when shifting
 set expandtab " tabs are spaces
+set list " enable listchars
+set listchars=tab:>. " display tabs as > followed by dots (.). So a typical tab with four spaces is >...
 set signcolumn=yes
 set cursorline " highlight current line
 set wildmenu " visual autocomplete for command menu
@@ -85,7 +87,7 @@ set showmatch " highlight matching
 set incsearch " search as characters are entered
 set hlsearch " highlight matches
 set nocompatible " for all practical cases a noop
-set colorcolumn=120 " 120 character vertical line
+set colorcolumn=120,140 " 120 character vertical line
 
 let $FZF_DEFAULT_COMMAND='ag --column --nocolor -g ""'
 
@@ -231,7 +233,7 @@ let g:airline_theme = 'dark'
 " vim-surround
 let g:surround_{char2nr('/')} = "/* \r */"
 
-let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_at_startup = 0
 
 let g:lsc_auto_map = {'defaults': v:true, 'PreviousReference': '', 'NextReference': ''}
 

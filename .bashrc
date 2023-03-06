@@ -21,6 +21,9 @@ HISTFILESIZE=2000
 
 # setting for reloading history file every time.
 export PROMPT_COMMAND="history -a; history -n"
+# setup ssh agent askpass
+export SSH_ASKPASS=/usr/bin/ksshaskpass
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -28,7 +31,7 @@ shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
-#shopt -s globstar
+# shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -144,12 +147,11 @@ export LANGUAGE=en_US.UTF-8
 export XDG_HOME=$HOME/.config
 export AV_CACHE=$HOME/.cache/bazel/_bazel_siftikhar/5290b2948b376bde6190d6c97c8f2aac
 export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
-export execution="core/runtime/internal_libs/execution"
-/home/siftikhar/python/bin/powerline-daemon -q
+/home/sohaib/.local/bin/powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
 export POWERLINE_PROMPT='$'
-source $HOME/python/lib/python3.7/site-packages/powerline/bindings/bash/powerline.sh
+source $HOME/.local/lib/python3.10/site-packages/powerline/bindings/bash/powerline.sh
 
 ## My Bindings
 export EDITOR=nvim
@@ -182,7 +184,6 @@ alias tf="terraform"
 alias vim="nvim"
 alias cat="bat"
 alias jfmt="java -jar ~/.local/lib/java/google-java-format-1.7-all-deps.jar"
-# alias buildifier="/home/siftikhar/code/bazel/buildtools/bazel-bin/buildifier/linux_amd64_stripped/buildifier"
 alias bz_compdb="/home/siftikhar/code/external/bazel-compilation-database/generate.sh"
 alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
 alias groovylint="$HOME/.local/lib/npm/node_modules/npm-groovy-lint/lib/index.js"
@@ -193,7 +194,7 @@ alias bbc="bazel build --config=clang-tidy"
 alias bt="bazel test"
 alias btg="bazel test --config=gcc"
 alias bbc="bazel build --config=clang-tidy"
-eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+# eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 function gpushu () {
   branch=$(git branch --show-current)
@@ -223,52 +224,6 @@ function rebase_all() {
   git checkout $base
 }
 
-# Rebases a chain of PRs starting from the current branch.
-# branchA <- branchB <- branchC <- ...
-function rebase_chain_deprecated() {
-  base=`git branch --show-current`
-  fbase=$base
-  chain=`gh pr list --search "is:open base:$base" | awk '{ print $(NF-1) }'`
-  for branch in $chain; do
-    echo "git checkout $branch && git pull --rebase origin $base && gpush -f"
-    # Change the base to the new branch.
-    base=$branch
-    chain+=`gh pr list --search "is:open base:$base" | awk '{ print $(NF-1) }'`
-    for b in $chain; do
-      echo $b
-    done
-  done
-  # git checkout $fbase
-}
-
-function triggerci () {
-  pr_id=${1:-$(gh pr view | awk '{ if ($1 == "number:") {print $2} }')}
-  echo "triggering $pr_id"
-  # command=${1:-build}
-  command=build
-  # jcli job $command "AVBuilds AVCI PR-$pr_id"
-  jcli job $command "avbuilds-avci PR-$pr_id"
-}
-
-function triggerciall () {
-  prs="$@"
-  for pr in $prs
-  do
-    triggerci $pr
-  done
-}
-
-function stageme () {
-  pr_id=${1:-$(gh pr view | awk '{ if ($1 == "number:") {print $2} }')}
-  echo "triggering $pr_id"
-  command=build
-  jcli job $command "avbuilds-si-staging PR-$pr_id"
-}
-
-function bzx () {
-  docker exec --user user -it `docker ps -qf 'name=bazel-av'` /bin/bash
-}
-
 # FZF Commands
 export FZF_DEFAULT_COMMAND='ag --nocolor --column -g ""'
 export FZF_ALT_C_COMMAND='fdfind -t d ""'
@@ -288,11 +243,16 @@ fzf-git-branch() {
   READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$selected${READLINE_LINE:$READLINE_POINT}"
   READLINE_POINT=$(( READLINE_POINT + ${#selected} ))
 }
+
+function codot() {
+  dot -T svg <(unzip -p "$1" "*.dot") -o "${2:-graph.svg}"
+}
+
 # bind Alt-G to search for git branches in locally checked out branches.
 bind -x '"\eg": fzf-git-branch'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/siftikhar/.sdkman"
-[[ -s "/home/siftikhar/.sdkman/bin/sdkman-init.sh" ]] && source "/home/siftikhar/.sdkman/bin/sdkman-init.sh"
+# export SDKMAN_DIR="/home/siftikhar/.sdkman"
+# [[ -s "/home/siftikhar/.sdkman/bin/sdkman-init.sh" ]] && source "/home/siftikhar/.sdkman/bin/sdkman-init.sh"
