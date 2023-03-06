@@ -6,12 +6,12 @@ let g:ale_cache_executable_check_failures = 1
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug  'jiangmiao/auto-pairs'
-" Plug 'Shougo/deoplete.nvim'
-Plug 'preservim/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'Xuyuanp/nerdtree-git-plugin'
+" Plug 'preservim/nerdtree', { 'on':  'NERDTreeToggle' }
+" Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'nvim-tree/nvim-web-devicons' " optional, for file icons
+Plug 'nvim-tree/nvim-tree.lua'
 Plug 'rgarver/Kwbd.vim'
 Plug 'makerj/vim-pdf'
-" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -39,8 +39,10 @@ Plug 'junegunn/fzf.vim'
 call plug#end()
 
 if has('nvim')
-" source ~/.config/nvim/config/coc.vim
   source ~/.config/nvim/config/ale.vim
+lua <<EOF
+  require("nvim-tree").setup()
+EOF
   packadd termdebug
   set shortmess-=F
 endif
@@ -143,8 +145,8 @@ nnoremap <leader>s :Ag
 nnoremap <leader>q :cclose<CR>
 nnoremap <leader>z :pclose<CR>
 nnoremap <leader>ln :se nu!<CR>
-nnoremap <leader>ls :NERDTreeToggle<CR>
-nnoremap <leader>lf :NERDTreeFind<CR>
+nnoremap <leader>ls :NvimTreeToggle<CR>
+nnoremap <leader>lf :NvimTreeFindFile<CR>
 nnoremap <leader>hh <C-w>h
 nnoremap <leader>ll <C-w>l
 nnoremap <leader>jj <C-w>j
