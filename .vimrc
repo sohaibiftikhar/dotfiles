@@ -6,8 +6,6 @@ let g:ale_cache_executable_check_failures = 1
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug  'jiangmiao/auto-pairs'
-" Plug 'preservim/nerdtree', { 'on':  'NERDTreeToggle' }
-" Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'nvim-tree/nvim-web-devicons' " optional, for file icons
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'rgarver/Kwbd.vim'
@@ -28,7 +26,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'vim-syntastic/syntastic'
 Plug 'hashivim/vim-terraform'
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'natebosch/vim-lsc'
@@ -36,12 +34,44 @@ Plug 'dense-analysis/ale'
 Plug 'cespare/vim-toml'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'lewis6991/gitsigns.nvim'
 call plug#end()
 
 if has('nvim')
   source ~/.config/nvim/config/ale.vim
 lua <<EOF
-  require("nvim-tree").setup()
+require("nvim-tree").setup({
+  sync_root_with_cwd = true,
+  git = {
+    ignore = false,
+  },
+  actions ={
+    open_file = {
+      window_picker = {
+        enable = false,
+      },
+    },
+  },
+  renderer = {
+    full_name = true,
+    group_empty = true,
+    special_files = {},
+    symlink_destination = false,
+    indent_markers = {
+      enable = true,
+    },
+    icons = {
+      git_placement = "signcolumn",
+      show = {
+        file = true,
+        folder = true,
+        folder_arrow = true,
+        git = true,
+      },
+    },
+  },
+})
+require('gitsigns').setup()
 EOF
   packadd termdebug
   set shortmess-=F
@@ -111,25 +141,19 @@ nnoremap <A-P> :Buffers<CR>
 command! -bang -nargs=* MyAg
   \ call fzf#vim#ag(
     \ <q-args>,
-    \ "--ignore-dir={bazel-out,bazel-bin} -G '\.(cc|inl|hh|py|wafl|sadl|asl|yaml)$'",
-    \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
-    \ <bang>0)
-command! -bang -nargs=* Cag
-  \ call fzf#vim#ag(
-    \ <q-args>,
-    \ "-G '^\./core/'",
+    \ "--ignore-dir={bazel-out,bazel-bin,out} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|wafl|sadl|asl|yaml)$'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=* Rag
   \ call fzf#vim#ag(
     \ <q-args>,
-    \ "-G '^\./core/runtime/'",
+    \ "-G '^\./src/'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=* Sag
   \ call fzf#vim#ag(
     \ <q-args>,
-    \ "-G '^\./core/sprockets/'",
+    \ "-G '^\./src/rock/'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=* Wag
@@ -151,6 +175,7 @@ nnoremap <leader>hh <C-w>h
 nnoremap <leader>ll <C-w>l
 nnoremap <leader>jj <C-w>j
 nnoremap <leader>kk <C-w>k
+" vmap <leader>y :w !nc -q0 localhost 5556<CR><CR>
 vmap <leader>y :w !nc -q0 localhost 5556<CR><CR>
 nnoremap <leader>[ :bp<CR>
 nnoremap <leader>] :bn<CR>
@@ -166,6 +191,7 @@ xnoremap p pgvy
 nmap <leader>c <Plug>Kwbd
 
 command! Bd call Bd()
+command! -nargs=1 TabChange call TabChange(<q-args>)
 command! FixImports :!autoflake --in-place --remove-all-unused-imports %
 command! Ccformat :!clang-format -i %
 
@@ -177,7 +203,7 @@ endfunction
 command! Bzlformat call BzlFormat()
 
 " Markdown plugin
-autocmd BufRead *.md nnoremap <C-m> :!grip --export % /tmp/%.html && google-chrome /tmp/%.html<CR>
+autocmd BufRead *.md nnoremap <C-m> :!grip --export % /tmp/expand('%:t').html && google-chrome /tmp/%.html<CR>
 
 let g:termdebug_wide=1
 let g:vim_markdown_folding_disabled = 1
@@ -190,11 +216,12 @@ function! Grep(...)
     return system(join(extend([&grepprg], a:000), ' '))
 endfunction
 
-" Close all buffers except current one
+" Close all buffers except current one "
 function! Bd(...)
     execute "%bd|e#"
 endfunction
 
+" Change the tab spaces for the function.
 function! TabChange(spaces)
   let &tabstop=a:spaces " number of visual spaces per tab
   let &softtabstop=a:spaces " number of spaces in tab when editing

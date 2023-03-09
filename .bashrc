@@ -131,11 +131,14 @@ export PATH="/home/siftikhar/python/bin:$PATH"
 ## Path changes
 GOHOME=/usr/local/go
 GOPATH=$HOME/go
+ROCKPATH=/home/sohaib/code/recogni/rock
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=$GOHOME/bin:$PATH
 PATH=$GOPATH/bin:$PATH
+PATH=$PATH:$ROCKPATH/out
+
 
 ## my-changes
 export LC_ALL=C.UTF-8
@@ -145,7 +148,6 @@ export LANG=C.UTF-8
 export LANGUAGE=en_US.UTF-8
 
 export XDG_HOME=$HOME/.config
-export AV_CACHE=$HOME/.cache/bazel/_bazel_siftikhar/5290b2948b376bde6190d6c97c8f2aac
 export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
 /home/sohaib/.local/bin/powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
@@ -159,7 +161,7 @@ export TERM=screen-256color
 alias '..=cd ..'
 alias '...=cd ..; cd ..'
 alias clear_history="clear && tmux clear-history"
-alias av="cd $AV"
+alias dr="cd ~/code/recogni/rock"
 alias gr="grep -r"
 alias ta="session=${session:-dev} tmux a -t$session"
 alias tn="dev-tmux"
@@ -186,15 +188,11 @@ alias cat="bat"
 alias jfmt="java -jar ~/.local/lib/java/google-java-format-1.7-all-deps.jar"
 alias bz_compdb="/home/siftikhar/code/external/bazel-compilation-database/generate.sh"
 alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
-alias groovylint="$HOME/.local/lib/npm/node_modules/npm-groovy-lint/lib/index.js"
 alias myprs="gh pr list --author='@me'"
-alias bb="bazel build"
-alias bbg="bazel build --config=gcc"
-alias bbc="bazel build --config=clang-tidy"
-alias bt="bazel test"
-alias btg="bazel test --config=gcc"
-alias bbc="bazel build --config=clang-tidy"
-# eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+alias mkrock="make -j8 rock DEBUG=YES"
+alias testrock="make -j8 all test DEBUG=YES"
+# Arch only. Remove orphaned packages.
+alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
 
 function gpushu () {
   branch=$(git branch --show-current)
