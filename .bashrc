@@ -149,7 +149,7 @@ export LANGUAGE=en_US.UTF-8
 
 export XDG_HOME=$HOME/.config
 export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
-/home/sohaib/.local/bin/powerline-daemon -q
+$HOME/.local/bin/powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
 export POWERLINE_PROMPT='$'
