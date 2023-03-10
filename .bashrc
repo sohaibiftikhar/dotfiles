@@ -131,7 +131,7 @@ export PATH="/home/siftikhar/python/bin:$PATH"
 ## Path changes
 GOHOME=/usr/local/go
 GOPATH=$HOME/go
-ROCKPATH=/home/sohaib/code/recogni/rock
+ROCKPATH=$HOME/code/recogni/rock
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
