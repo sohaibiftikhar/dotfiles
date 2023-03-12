@@ -23,6 +23,7 @@ HISTFILESIZE=2000
 export PROMPT_COMMAND="history -a; history -n"
 # setup ssh agent askpass
 export SSH_ASKPASS=/usr/bin/ksshaskpass
+ssh-add < /dev/null
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
 export GPG_TTY="$(tty)"
 
