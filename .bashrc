@@ -252,8 +252,11 @@ function codot() {
 # bind Alt-G to search for git branches in locally checked out branches.
 bind -x '"\eg": fzf-git-branch'
 
+# must be in this order for fzf to work.
+[[ $- == *i* ]] && source /usr/share/blesh/ble.sh
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 # export SDKMAN_DIR="/home/siftikhar/.sdkman"
 # [[ -s "/home/siftikhar/.sdkman/bin/sdkman-init.sh" ]] && source "/home/siftikhar/.sdkman/bin/sdkman-init.sh"
+
