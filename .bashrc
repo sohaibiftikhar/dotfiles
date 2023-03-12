@@ -23,7 +23,6 @@ HISTFILESIZE=2000
 export PROMPT_COMMAND="history -a; history -n"
 # setup ssh agent askpass
 export SSH_ASKPASS=/usr/bin/ksshaskpass
-ssh-add < /dev/null
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
 export GPG_TTY="$(tty)"
 
@@ -254,6 +253,7 @@ function codot() {
 bind -x '"\eg": fzf-git-branch'
 
 # must be in this order for fzf to work.
+ssh-add < /dev/null
 [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
