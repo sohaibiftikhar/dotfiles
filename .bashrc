@@ -189,8 +189,10 @@ alias jfmt="java -jar ~/.local/lib/java/google-java-format-1.7-all-deps.jar"
 alias bz_compdb="/home/siftikhar/code/external/bazel-compilation-database/generate.sh"
 alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
 alias myprs="gh pr list --author='@me'"
-alias mkrock="make -j8 rock DEBUG=YES"
-alias testrock="make -j8 all test DEBUG=YES"
+alias mkrock="make -j rock DEBUG=YES"
+alias fix="make -j format"
+alias testrock="make -j all test DEBUG=YES"
+alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean"
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
 

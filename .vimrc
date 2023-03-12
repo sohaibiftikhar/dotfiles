@@ -2,7 +2,6 @@
 let mapleader=" "
 " Settings before loading plugins
 if has('nvim')
-let g:ale_cache_executable_check_failures = 1
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug  'jiangmiao/auto-pairs'
@@ -26,60 +25,32 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'vim-syntastic/syntastic'
 Plug 'hashivim/vim-terraform'
-" Plug 'airblade/vim-gitgutter'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'natebosch/vim-lsc'
-Plug 'dense-analysis/ale'
 Plug 'cespare/vim-toml'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+" For vsnip users.
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'rafamadriz/friendly-snippets'
 call plug#end()
 
 if has('nvim')
-  source ~/.config/nvim/config/ale.vim
-lua <<EOF
-require("nvim-tree").setup({
-  sync_root_with_cwd = true,
-  git = {
-    ignore = false,
-  },
-  actions ={
-    open_file = {
-      window_picker = {
-        enable = false,
-      },
-    },
-  },
-  renderer = {
-    full_name = true,
-    group_empty = true,
-    special_files = {},
-    symlink_destination = false,
-    indent_markers = {
-      enable = true,
-    },
-    icons = {
-      git_placement = "signcolumn",
-      show = {
-        file = true,
-        folder = true,
-        folder_arrow = true,
-        git = true,
-      },
-    },
-  },
-})
-require('gitsigns').setup()
-EOF
+  lua require('config')
   packadd termdebug
   set shortmess-=F
 endif
 syntax on
 filetype plugin indent on
-
-" set background=dark
 
 " Alt key mappings. Not needed for neovim
 " https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim
@@ -261,21 +232,14 @@ let g:airline_theme = 'dark'
 
 " vim-surround
 let g:surround_{char2nr('/')} = "/* \r */"
-
-let g:deoplete#enable_at_startup = 0
-
 let g:lsc_auto_map = {'defaults': v:true, 'PreviousReference': '', 'NextReference': ''}
-
 let g:sexp_filetypes = "clojure, scheme, list, timl, python"
-" Language Server Settings
-" let g:lsp_signs_enabled = 1
-" let g:lsp_diagnostics_enabled = 1
-" let g:lsp_diagnostics_echo_cursor = 1
 
 " Put these lines at the very end of your vimrc file.
 " Load all plugins now.
 " Plugins need to be added to runtimepath before helptags can be generated.
 packloadall
+
 " Load all of the helptags now, after plugins have been loaded.
 " All messages and errors will be ignored.
 silent! helptags ALL
