@@ -24,6 +24,7 @@ export PROMPT_COMMAND="history -a; history -n"
 # setup ssh agent askpass
 export SSH_ASKPASS=/usr/bin/ksshaskpass
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
+export GPG_TTY="$(tty)"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
