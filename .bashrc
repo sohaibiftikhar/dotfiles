@@ -191,7 +191,7 @@ alias bz_compdb="/home/siftikhar/code/external/bazel-compilation-database/genera
 alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
 alias myprs="gh pr list --author='@me'"
 alias mkrock="make -j rock DEBUG=YES"
-alias fix="make -j format"
+alias fix="make -j format-diff"
 alias testrock="make -j all test DEBUG=YES"
 alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean"
 # Arch only. Remove orphaned packages.

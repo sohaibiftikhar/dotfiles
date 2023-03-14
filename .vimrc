@@ -115,6 +115,7 @@ command! -bang -nargs=* MyAg
     \ "--ignore-dir={bazel-out,bazel-bin,out} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|wafl|sadl|asl|yaml)$'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
+command! -bang -nargs=1 Cag call CustomAg(<q-args>)
 command! -bang -nargs=* Rag
   \ call fzf#vim#ag(
     \ <q-args>,
@@ -134,7 +135,7 @@ command! -bang -nargs=* Wag
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 nnoremap <leader>S :MyAg<CR>
-nnoremap <leader>s :Ag
+nnoremap <leader>s :Cag 
 
 
 nnoremap <leader>q :cclose<CR>
@@ -165,6 +166,15 @@ command! Bd call Bd()
 command! -nargs=1 TabChange call TabChange(<q-args>)
 command! FixImports :!autoflake --in-place --remove-all-unused-imports %
 command! Ccformat :!clang-format -i %
+
+" Invoke ag on a custom user specified directory.
+function! CustomAg(directory)
+    call fzf#vim#ag(
+        \ "",
+        \ "-G '\." . a:directory . "/'",
+        \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
+        \ 0)
+endfunction
 
 function! BzlFormat()
   execute "!yapf -i %"
