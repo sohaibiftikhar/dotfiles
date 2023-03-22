@@ -192,9 +192,10 @@ alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
 alias myprs="gh pr list --author='@me'"
 alias mkrock="make -j rock DEBUG=YES"
 alias fix="make -j format-diff"
-alias testrock="make -j15 all test DEBUG=YES"
-alias unittest="make -j all test-unit DEBUG=YES"
-alias e2ereport="typora $ROCKPATH/staging/test/e2e/report.md"
+alias testall="make -j15 all test DEBUG=YES"
+alias testrock="make -j all test-unit DEBUG=YES"
+alias e2etest="make -j15 test-e2e DEBUG=YES"
+alias e2ereport="typora $ROCKPATH/staging/test/e2e/report.md &> /dev/null"
 alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean"
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
