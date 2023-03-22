@@ -192,7 +192,9 @@ alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
 alias myprs="gh pr list --author='@me'"
 alias mkrock="make -j rock DEBUG=YES"
 alias fix="make -j format-diff"
-alias testrock="make -j all test DEBUG=YES"
+alias testrock="make -j15 all test DEBUG=YES"
+alias unittest="make -j all test-unit DEBUG=YES"
+alias e2ereport="typora $ROCKPATH/staging/test/e2e/report.md"
 alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean"
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
@@ -249,12 +251,11 @@ function codot() {
   dot -T svg <(unzip -p "$1" "*.dot") -o "${2:-graph.svg}"
 }
 
-# bind Alt-G to search for git branches in locally checked out branches.
-bind -x '"\eg": fzf-git-branch'
-
 # must be in this order for fzf to work.
 ssh-add < /dev/null
 [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
+# bind Alt-G to search for git branches in locally checked out branches. Must happen after sourcing ble.sh.
+bind -x '"\eg": fzf-git-branch'
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!

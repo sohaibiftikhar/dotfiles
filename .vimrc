@@ -5,10 +5,10 @@ if has('nvim')
 " Plugins
 call plug#begin('~/.vim/plugged')
 Plug  'jiangmiao/auto-pairs'
+Plug 'nvim-lua/plenary.nvim' " Nvim function helpers.
 Plug 'nvim-tree/nvim-web-devicons' " optional, for file icons
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'rgarver/Kwbd.vim'
-Plug 'makerj/vim-pdf'
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -24,6 +24,7 @@ Plug 'tpope/vim-salve'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'vim-syntastic/syntastic'
+Plug 'qpkorr/vim-renamer'
 Plug 'hashivim/vim-terraform'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
@@ -42,6 +43,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'rafamadriz/friendly-snippets'
+Plug 'jose-elias-alvarez/null-ls.nvim'
 call plug#end()
 
 if has('nvim')
@@ -236,6 +238,11 @@ autocmd Syntax * RainbowParenthesesLoadRound
 autocmd Syntax * RainbowParenthesesLoadSquare
 autocmd Syntax * RainbowParenthesesLoadBraces
 
+" Renamer
+" let g:RenamerShowHidden = 1
+" let b:RenamerShowHiddenEnabled = 1
+let b:renamerShowHiddenEnabled = 1
+
 " vim-airline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme = 'dark'
@@ -248,7 +255,7 @@ let g:sexp_filetypes = "clojure, scheme, list, timl, python"
 " Put these lines at the very end of your vimrc file.
 " Load all plugins now.
 " Plugins need to be added to runtimepath before helptags can be generated.
-packloadall
+" packloadall
 
 " Load all of the helptags now, after plugins have been loaded.
 " All messages and errors will be ignored.
