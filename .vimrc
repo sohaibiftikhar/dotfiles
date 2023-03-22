@@ -34,6 +34,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'neovim/nvim-lspconfig'
+Plug 'folke/trouble.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
@@ -144,6 +145,7 @@ nnoremap <leader>q :cclose<CR>
 nnoremap <leader>z :pclose<CR>
 nnoremap <leader>ln :se nu!<CR>
 nnoremap <leader>ls :NvimTreeToggle<CR>
+nnoremap <leader>tt :TroubleToggle<CR>
 nnoremap <leader>lf :NvimTreeFindFile<CR>
 nnoremap <leader>hh <C-w>h
 nnoremap <leader>ll <C-w>l

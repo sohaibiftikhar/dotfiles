@@ -152,6 +152,7 @@ require('lspconfig')['clangd'].setup{
     flags = lsp_flags,
 }
 
+-- nullls setup
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
@@ -159,4 +160,8 @@ null_ls.setup({
         null_ls.builtins.formatting.black,
     },
 })
+
+-- trouble.nvim setup. Pretty diagnostics for LSP errors.
+require("trouble").setup()
+
 -- End LSP setup. --
