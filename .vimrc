@@ -152,7 +152,7 @@ nnoremap <leader>ll <C-w>l
 nnoremap <leader>jj <C-w>j
 nnoremap <leader>kk <C-w>k
 " vmap <leader>y :w !nc -q0 localhost 5556<CR><CR>
-vmap <leader>y :w !wl-copy<CR><CR>
+vmap <leader>y :w !xclip -selection clipboard<CR><CR>
 nnoremap <leader>[ :bp<CR>
 nnoremap <leader>] :bn<CR>
 nnoremap <A-b> :b
