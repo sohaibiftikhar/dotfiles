@@ -133,6 +133,7 @@ export PATH="/home/siftikhar/python/bin:$PATH"
 GOHOME=/usr/local/go
 GOPATH=$HOME/go
 ROCKPATH=$HOME/code/recogni/rock
+PATH=$PATH:/opt/cuda/bin
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/

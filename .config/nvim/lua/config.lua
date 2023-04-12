@@ -141,10 +141,12 @@ local lsp_flags = {
   debounce_text_changes = 150,
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local util = require 'lspconfig.util'
 require('lspconfig')['pyright'].setup{
     on_attach = on_attach,
     capabilities = capabilities,
     flags = lsp_flags,
+    root_dir = util.root_pattern("pyrightconfig.json"),
 }
 require('lspconfig')['clangd'].setup{
     on_attach = on_attach,
