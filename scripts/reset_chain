@@ -19,7 +19,7 @@ chain = [
     ),
     (
         "sohaib/feature/cube-sides",
-        2,
+        1,
     ),
     (
         "sohaib/feature/space-to-depth",
