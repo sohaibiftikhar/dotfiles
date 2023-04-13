@@ -170,6 +170,7 @@ command! Bd call Bd()
 command! -nargs=1 TabChange call TabChange(<q-args>)
 command! FixImports :!autoflake --in-place --remove-all-unused-imports %
 command! Ccformat :!clang-format -i %
+command! Scratch :e /tmp/scratch.md
 
 " Invoke ag on a custom user specified directory.
 function! CustomAg(directory)

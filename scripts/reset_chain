@@ -19,10 +19,15 @@ chain = [
     ),
     (
         "sohaib/feature/cube-sides",
+        2,
+    ),
+    (
+        "sohaib/feature/space-to-depth",
         1,
     ),
 ]
-combined_branch = "sohaib/feature/cube-sides"
+combined_branch = None
+combined_branch = combined_branch or chain[-1][0]
 
 if __name__ == "__main__":
     repo = Repo(os.environ.get("REPO_PATH"))
@@ -38,7 +43,7 @@ if __name__ == "__main__":
         commit_idx = commit_idx + num_commits_in_branch
         message = commit.message.split("\n")[0].strip()
         print(
-            f"git checkout {branch} && git reset --hard {commit.hexsha[:10]} && git push -uf origin {branch}"
+            f"git checkout {branch} && git reset --hard {commit.hexsha[:10]} && git push --force-with-lease origin {branch}"
             f" # {message}"
         )
     if combined_branch != chain[-1][0]:
