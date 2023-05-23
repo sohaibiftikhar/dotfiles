@@ -115,7 +115,7 @@ nnoremap <A-P> :Buffers<CR>
 command! -bang -nargs=* MyAg
   \ call fzf#vim#ag(
     \ <q-args>,
-    \ "--ignore-dir={bazel-out,bazel-bin,out} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yaml|mk|Makefile)$'",
+    \ "--ignore-dir={staging,out,build} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yaml|mk|Makefile|cmake|CMakeLists.txt)$'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=1 Cag call CustomAg(<q-args>)
