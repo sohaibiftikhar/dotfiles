@@ -4,33 +4,76 @@
 By default only prints out the commands it would run. Pipe to bash to actually execute the commands.
 """
 import os
+from typing import Optional
+
+# pip install click
+import click
+import yaml
 
 # pip install GitPython
 from git.repo import Repo
 
-# chain in order of existence.
-# latest commit on combined_branch maps to last branch in chain and so on.
-chain = [
-    (
-        # branch name
-        "sohaib/refactor/integers",
-        # num commits in branch.
-        1,
-    ),
-    (
-        "sohaib/feature/cube-sides",
-        1,
-    ),
-    (
-        "sohaib/feature/space-to-depth",
-        1,
-    ),
-]
-combined_branch = None
-combined_branch = combined_branch or chain[-1][0]
+# pip install pyyaml
+from yaml.loader import SafeLoader
 
-if __name__ == "__main__":
+
+@click.option(
+    "-c",
+    "--config",
+    help="The config file to load for the chain. Default is at $HOME/.config/chain.conf",
+    default=None,
+)
+@click.option(
+    "-b",
+    "--branch",
+    help="The combined branch which sits at the end of the chain. Default is to pick the currently active branch.",
+    default=None,
+)
+@click.command()
+def cli(config: str, branch: Optional[str]):
+    """Helps manage chained branches.
+
+    Maps commits from the combined branch (--branch) to each branch in the chain as specified by the number of commits
+    in the chain config.
+
+    Config is in yaml format. Example format for the config file is:
+
+    \b
+    -
+        - sohaib/feature/mns # Branch name
+        - 3 # num commits in branch
+    -
+        - sohaib/feature/clip
+        - 1
+
+    Example:
+    If combined branch as commits (a, b, c, d) with d being the most recent and the following chain config
+
+    \b
+    - 
+        - branch1
+        - 1
+    - 
+        - branch2
+        - 2
+    - 
+        - branch3
+        - 1
+
+    Then reset_chain will reset:
+
+    \b
+    - branch1 to commit a
+    - branch2 to commit c (since it had commit count of 2)
+    - branch3 to commit d
+    """
+    config = config or f"{os.environ['HOME']}/.config/chain.conf"
+    with open(config) as fstream:
+        chain = yaml.load(fstream, SafeLoader)
+    assert isinstance(chain, list)
+
     repo = Repo(os.environ.get("REPO_PATH"))
+    combined_branch = branch or repo.active_branch
     num_commits = sum(num_commits_in_branch for _, num_commits_in_branch in chain)
     commits = list(repo.iter_commits(combined_branch, max_count=num_commits))
     commits.reverse()
@@ -48,3 +91,7 @@ if __name__ == "__main__":
         )
     if combined_branch != chain[-1][0]:
         print(f"git checkout {combined_branch}")
+
+
+if __name__ == "__main__":
+    cli()

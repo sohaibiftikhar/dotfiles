@@ -140,6 +140,7 @@ PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=$GOHOME/bin:$PATH
 PATH=$GOPATH/bin:$PATH
 PATH=$PATH:$ROCKPATH/out
+PATH=$PATH:$ROCKPATH/staging/bin
 
 
 ## my-changes
@@ -179,12 +180,12 @@ alias gpull="git pull origin"
 alias gpr="git pull --rebase origin "
 alias gr="git rebase "
 alias gb="git branch --show-current"
+alias gba="git branch"
 alias grc="git rebase --continue"
 alias gri="git rebase -i"
 alias queue="gh pr comment -b 'bueller r+'"
 alias gpush="git push "
 alias gpushf="git push --force-with-lease "
-alias grmb="git push origin --delete "
 alias tf="terraform"
 alias vim="nvim"
 alias cat="bat"
@@ -206,6 +207,15 @@ alias e2ereport="typora $ROCKPATH/staging/test/e2e/report.md &> /dev/null"
 alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean"
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
+
+function rmbranch()
+{
+    for branch in "$@"; do
+        echo "Deleting branch '$branch'"
+        git branch -D "$branch"
+        git push origin --delete "$branch"
+    done
+}
 
 function e2etest()
 {
