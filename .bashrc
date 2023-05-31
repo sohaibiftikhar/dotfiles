@@ -208,6 +208,11 @@ alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
 
+function mk()
+{
+    make -j${nproc} $@ DEBUG=YES
+}
+
 function rmbranch()
 {
     for branch in "$@"; do
