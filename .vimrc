@@ -119,25 +119,15 @@ command! -bang -nargs=* MyAg
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=1 Cag call CustomAg(<q-args>)
-command! -bang -nargs=* Rag
+command! -bang -nargs=1 Fag call FileAg(<q-args>)
+command! -bang -nargs=* Sag
   \ call fzf#vim#ag(
     \ <q-args>,
     \ "-G '^\./src/'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
-command! -bang -nargs=* Sag
-  \ call fzf#vim#ag(
-    \ <q-args>,
-    \ "-G '^\./src/rock/'",
-    \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
-    \ <bang>0)
-command! -bang -nargs=* Wag
-  \ call fzf#vim#ag(
-    \ <q-args>,
-    \ "-G '\./core/python/public/libs/wafl/'",
-    \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
-    \ <bang>0)
 nnoremap <leader>S :MyAg<CR>
+nnoremap <leader>F :Fag 
 nnoremap <leader>s :Cag 
 
 
@@ -180,6 +170,16 @@ function! CustomAg(directory)
         \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
         \ 0)
 endfunction
+
+function! FileAg(pattern)
+    call fzf#vim#ag(
+        \ "",
+        \ "-G '" . a:pattern . "'",
+        \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
+        \ 0)
+endfunction
+
+
 
 function! BzlFormat()
   execute "!yapf -i %"

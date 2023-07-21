@@ -140,8 +140,6 @@ PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=$GOHOME/bin:$PATH
 PATH=$GOPATH/bin:$PATH
 PATH=$PATH:$ROCKPATH/out
-PATH=$PATH:$ROCKPATH/staging/bin
-
 
 ## my-changes
 export LC_ALL=C.UTF-8
@@ -186,6 +184,7 @@ alias gri="git rebase -i"
 alias queue="gh pr comment -b 'bueller r+'"
 alias gpush="git push "
 alias gpushf="git push --force-with-lease "
+alias explorer="xdg-open ."
 alias tf="terraform"
 alias vim="nvim"
 alias cat="bat"
@@ -210,7 +209,7 @@ alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || ech
 
 function mk()
 {
-    make -j${nproc} $@ DEBUG=YES
+    make -j12 $@ DEBUG=YES
 }
 
 function rmbranch()
@@ -220,6 +219,16 @@ function rmbranch()
         git branch -D "$branch"
         git push origin --delete "$branch"
     done
+}
+
+function builddev()
+{
+    docker build -t rock:dev -f ci.Dockerfile .
+}
+
+function launchdev()
+{
+    docker run --rm -it -v $HOME/code/recogni/rock:/opt/rock -v /tmp:/tmp rock:dev bash
 }
 
 function e2etest()
@@ -236,23 +245,13 @@ function awssh () {
   ssh `aws ec2 describe-instances --filter Name=tag:Name,Values=$1 | jq -r '.Reservations[].Instances[] | select(.State.Name=="running") | .PrivateIpAddress'`
 }
 
-function clang_tidy () {
-  bazel build --config=clang-tidy //$1
-}
-
 function print_chain() {
   base=`git branch --show-current`
   gh pr list --search "is:open base:$base"
 }
 
-# Rebases all PRs that have the current branch as their target branch.
-function rebase_all() {
-  base=`git branch --show-current`
-  chain=`gh pr list --search "is:open base:$base" | awk '{ print $(NF-1) }'`
-  for branch in $chain; do
-    git checkout $branch && git pull --rebase origin $base && gpush -f
-  done
-  git checkout $base
+function codot() {
+  dot -T svg <(unzip -p "$1" "*.dot") -o "${2:-graph.svg}"
 }
 
 # FZF Commands
@@ -274,11 +273,6 @@ fzf-git-branch() {
   READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$selected${READLINE_LINE:$READLINE_POINT}"
   READLINE_POINT=$(( READLINE_POINT + ${#selected} ))
 }
-
-function codot() {
-  dot -T svg <(unzip -p "$1" "*.dot") -o "${2:-graph.svg}"
-}
-
 # must be in this order for fzf to work.
 ssh-add < /dev/null
 [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
