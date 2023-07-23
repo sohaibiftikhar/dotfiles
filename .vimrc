@@ -43,6 +43,7 @@ Plug 'hrsh7th/nvim-cmp'
 " For vsnip users.
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
+Plug 'simrat39/rust-tools.nvim'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'jose-elias-alvarez/null-ls.nvim'
 call plug#end()
@@ -161,6 +162,7 @@ command! -nargs=1 TabChange call TabChange(<q-args>)
 command! FixImports :!autoflake --in-place --remove-all-unused-imports %
 command! Ccformat :!clang-format -i %
 command! Scratch :e /tmp/scratch.md
+command! Config :e ~/.config/nvim/lua/config.lua
 
 " Invoke ag on a custom user specified directory.
 function! CustomAg(directory)

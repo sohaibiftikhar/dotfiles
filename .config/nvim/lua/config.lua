@@ -107,6 +107,10 @@ vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+-- menuone: popup even when there's only one match
+-- noinsert: Do not insert text until a selection is made
+-- noselect: Do not auto-select, nvim-cmp plugin will handle this for us.
+vim.o.completeopt = "menuone,noinsert,noselect"
 vim.lsp.set_log_level("warn")
 
 -- Use an on_attach function to only map the following keys
@@ -142,17 +146,30 @@ local lsp_flags = {
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local util = require 'lspconfig.util'
-require('lspconfig')['pyright'].setup{
+require('lspconfig')['pyright'].setup({
     on_attach = on_attach,
     capabilities = capabilities,
     flags = lsp_flags,
     root_dir = util.root_pattern("pyrightconfig.json"),
-}
-require('lspconfig')['clangd'].setup{
+})
+require('lspconfig')['clangd'].setup({
     on_attach = on_attach,
     capabilities = capabilities,
     flags = lsp_flags,
-}
+})
+
+-- rustlang setup
+require('lspconfig')['rust_analyzer'].setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    flags = lsp_flags,
+    settings = {
+        ["rust-analyzer"] = {
+            checkOnSave = { command = "clippy" },
+        },
+    },
+})
+require("rust-tools").setup()
 
 -- nullls setup
 local null_ls = require("null-ls")
@@ -160,8 +177,10 @@ null_ls.setup({
     sources = {
         null_ls.builtins.formatting.isort,
         null_ls.builtins.formatting.black,
+        null_ls.builtins.formatting.clang_format,
     },
 })
+null_ls.register({null_ls.builtins.formatting.rustfmt, args = {"-emit=files"}})
 
 -- trouble.nvim setup. Pretty diagnostics for LSP errors.
 require("trouble").setup()

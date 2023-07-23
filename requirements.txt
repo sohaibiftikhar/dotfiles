@@ -3,3 +3,5 @@ powerline_gitstatus
 neovim
 neovim-remote
 pynvim
+GitPython
+yapf

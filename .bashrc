@@ -123,6 +123,7 @@ if ! shopt -oq posix; then
   fi
 fi
 export PATH=$PATH:~/.aws/bin/
+export PATH=$PATH:~/.cargo/bin/
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -203,13 +204,13 @@ alias fix="make -j format-diff"
 alias testall="make -j15 test DEBUG=YES"
 alias testrock="make -j15 test-unit DEBUG=YES"
 alias e2ereport="typora $ROCKPATH/staging/test/e2e/report.md &> /dev/null"
-alias cleanrock="make librock-clean rock-clean roll-clean strip-clean test-clean"
+alias cleanrock="make librock-clean rock-clean roll-clean unroll-clean strip-clean"
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
 
 function mk()
 {
-    make -j12 $@ DEBUG=YES
+    make -j15 $@ DEBUG=YES
 }
 
 function rmbranch()
@@ -251,7 +252,9 @@ function print_chain() {
 }
 
 function codot() {
-  dot -T svg <(unzip -p "$1" "*.dot") -o "${2:-graph.svg}"
+  # dot -T svg <(unzip -p "$1" "*.dot") -o "${2:-graph.svg}"
+  # required pacaur -S xdot-git
+  test $1 && xdot <(unzip -p "$1" "*.dot")
 }
 
 # FZF Commands
