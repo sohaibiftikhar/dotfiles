@@ -23,7 +23,6 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-salve'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
-Plug 'vim-syntastic/syntastic'
 Plug 'qpkorr/vim-renamer'
 Plug 'hashivim/vim-terraform'
 Plug 'godlygeek/tabular'
@@ -46,6 +45,7 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'simrat39/rust-tools.nvim'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'github/copilot.vim'
 call plug#end()
 
 if has('nvim')
@@ -116,7 +116,7 @@ nnoremap <A-P> :Buffers<CR>
 command! -bang -nargs=* MyAg
   \ call fzf#vim#ag(
     \ <q-args>,
-    \ "--ignore-dir={staging,out,build} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yaml|mk|Makefile|cmake|CMakeLists.txt)$'",
+    \ "--ignore-dir={staging,out,build,__pycache_} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yml|yaml|js|mk|Makefile|cmake|CMakeLists.txt)$'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=1 Cag call CustomAg(<q-args>)
@@ -128,7 +128,7 @@ command! -bang -nargs=* Sag
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 nnoremap <leader>S :MyAg<CR>
-nnoremap <leader>F :Fag 
+nnoremap <leader>f :Fag 
 nnoremap <leader>s :Cag 
 
 
@@ -143,7 +143,8 @@ nnoremap <leader>ll <C-w>l
 nnoremap <leader>jj <C-w>j
 nnoremap <leader>kk <C-w>k
 " vmap <leader>y :w !nc -q0 localhost 5556<CR><CR>
-vmap <leader>y :w !xclip -selection clipboard<CR><CR>
+" vmap <leader>y :w !xclip -selection clipboard<CR><CR>
+vmap <leader>y :w !pbcopy<CR><CR>
 nnoremap <leader>[ :bp<CR>
 nnoremap <leader>] :bn<CR>
 nnoremap <A-b> :b

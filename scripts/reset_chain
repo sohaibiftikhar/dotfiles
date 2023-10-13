@@ -50,13 +50,13 @@ def cli(config: str, branch: Optional[str]):
     If combined branch as commits (a, b, c, d) with d being the most recent and the following chain config
 
     \b
-    - 
+    -
         - branch1
         - 1
-    - 
+    -
         - branch2
         - 2
-    - 
+    -
         - branch3
         - 1
 
@@ -67,7 +67,23 @@ def cli(config: str, branch: Optional[str]):
     - branch2 to commit c (since it had commit count of 2)
     - branch3 to commit d
     """
-    config = config or f"{os.environ['HOME']}/.config/chain.conf"
+    conf_home = os.environ.get("HOME", ".") + "/.config"
+    config = config or f"{conf_home}/chain.conf"
+    tries = (
+            config,
+            f"{conf_home}/{config}",
+            f"{conf_home}/{config}.conf",
+            f"{conf_home}/chain{config}.conf",
+    )
+    found = False
+    for conf in tries:
+        if os.path.exists(conf):
+            config = conf
+            found = True
+            break
+    if not found:
+        raise ValueError("Config file not found. Tried the following locations: ", tries)
+    print(f"Using config file: {config}")
     with open(config) as fstream:
         chain = yaml.load(fstream, SafeLoader)
     assert isinstance(chain, list)

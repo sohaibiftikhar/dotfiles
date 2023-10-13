@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+
+def main():
+
+    # install the packages
+    print("pip3 install -r requirements.txt")
+
+    dot_files = [
+        ".alacritty.yml",
+        ".bashrc",
+        ".fzf.bash",
+        ".tigrc",
+        ".gitconfig",
+        ".tmux.conf",
+        ".tmux.reset.conf",
+        ".tmux-powerlinerc",
+        ".vimrc",
+        "scripts",
+    ]
+    for f in dot_files:
+        print(f"ln -s `pwd`/{f} $HOME/{f}")
+
+
+if __name__ == "__main__":
+    main()

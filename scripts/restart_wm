@@ -1,0 +1,4 @@
+#!/bin/bash
+
+yabai --restart-service
+skhd --restart-service

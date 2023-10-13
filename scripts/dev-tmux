@@ -8,7 +8,7 @@ echo "Creating session $session"
 
 # session="${session:-dev}"
 tmux new-session -s $session \; \
-   send-keys 'cd ~/code/recogni/rock && vim' C-m \; \
+   send-keys 'cd ~/code/mily/backend && vim' C-m \; \
    send-keys ' ls' \; \
    send-keys ' ll' \; \
    send-keys ':vsplit' C-m \; \
@@ -19,20 +19,3 @@ tmux new-session -s $session \; \
    send-keys 'cd ~/code/' C-m \; \
    select-window -t1 \; \
    select-pane -t1 \; \
-
-#   send-keys 'cd ~/code' C-m \; \
-#   split-window -v -p30 \; \
-#   select-pane -t1 \; \
-#   split-window -h -p75 \; \
-#   send-keys 'cdc && vim' C-m \; \
-#   select-pane -t3 \; \
-#   send-keys 'cdw' C-m \; \
-#   split-window -h -p66 \; \
-#   send-keys 'cd $HOME' C-m \; \
-#   split-window -h \; \
-#   send-keys 'htop' C-m \; \
-#   new-window \; \
-#   split-window -h -p30 \; \
-#   select-pane -t1 \; \
-#   select-window -t1 \; \
-#   select-pane -t1 \; 
