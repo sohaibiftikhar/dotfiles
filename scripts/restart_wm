@@ -1,4 +1,5 @@
 #!/bin/bash
+# Script for restarting the window manager
 
 yabai --restart-service
 skhd --restart-service

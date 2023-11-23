@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Resets chain to commits from the combined branch based on specs in chain.
 
 By default only prints out the commands it would run. Pipe to bash to actually execute the commands.
@@ -66,14 +66,15 @@ def cli(config: str, branch: Optional[str]):
     - branch1 to commit a
     - branch2 to commit c (since it had commit count of 2)
     - branch3 to commit d
-    """
+    """  # noqa: D301 (Need \b for raw formatting).
+
     conf_home = os.environ.get("HOME", ".") + "/.config"
     config = config or f"{conf_home}/chain.conf"
     tries = (
-            config,
-            f"{conf_home}/{config}",
-            f"{conf_home}/{config}.conf",
-            f"{conf_home}/chain{config}.conf",
+        config,
+        f"{conf_home}/{config}",
+        f"{conf_home}/{config}.conf",
+        f"{conf_home}/chain{config}.conf",
     )
     found = False
     for conf in tries:
@@ -83,7 +84,7 @@ def cli(config: str, branch: Optional[str]):
             break
     if not found:
         raise ValueError("Config file not found. Tried the following locations: ", tries)
-    print(f"Using config file: {config}")
+    print(f"# Using config file: {config}")
     with open(config) as fstream:
         chain = yaml.load(fstream, SafeLoader)
     assert isinstance(chain, list)
@@ -94,6 +95,7 @@ def cli(config: str, branch: Optional[str]):
     commits = list(repo.iter_commits(combined_branch, max_count=num_commits))
     commits.reverse()
     expected_commits = sum(num_commits for _, num_commits in chain)
+    branches = set(head.name for head in repo.heads)
     assert len(commits) == expected_commits, f"{len(commits)} != {expected_commits}"
     print(f"git checkout {combined_branch}")
     commit_idx = 0
@@ -101,8 +103,12 @@ def cli(config: str, branch: Optional[str]):
         commit = commits[commit_idx + (num_commits_in_branch - 1)]
         commit_idx = commit_idx + num_commits_in_branch
         message = commit.message.split("\n")[0].strip()
+        new_branch_flag = ""
+        if branch not in branches:
+            new_branch_flag = "-b"
         print(
-            f"git checkout {branch} && git reset --hard {commit.hexsha[:10]} && git push --force-with-lease origin {branch}"
+            f"git checkout {new_branch_flag} {branch} && git reset --hard {commit.hexsha[:10]} && "
+            f"git push --force-with-lease --set-upstream origin {branch}"
             f" # {message}"
         )
     if combined_branch != chain[-1][0]:

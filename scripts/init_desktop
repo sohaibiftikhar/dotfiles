@@ -5,8 +5,8 @@ import sys
 
 
 def main():
-
     # install the packages
+    print("./install_packages.sh")
     print("pip3 install -r requirements.txt")
 
     dot_files = [

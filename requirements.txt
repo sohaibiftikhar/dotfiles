@@ -5,3 +5,4 @@ neovim-remote
 pynvim
 GitPython
 yapf
+click

@@ -140,26 +140,43 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>F', function() vim.lsp.buf.format { async = true } end, bufopts)
 end
 
+local home = os.getenv("HOME")
+-- require("chatgpt").setup({
+-- })
+
 local lsp_flags = {
   -- This is the default in Nvim 0.7+
   debounce_text_changes = 150,
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local util = require 'lspconfig.util'
-require('lspconfig')['pyright'].setup({
+local nvim_lsp = require('lspconfig')
+-- Python language server.
+nvim_lsp.pyright.setup({
     on_attach = on_attach,
     capabilities = capabilities,
     flags = lsp_flags,
     root_dir = util.root_pattern("pyrightconfig.json"),
 })
-require('lspconfig')['clangd'].setup({
+
+-- c++ language server.
+nvim_lsp.clangd.setup({
     on_attach = on_attach,
     capabilities = capabilities,
     flags = lsp_flags,
+    cmd = {
+      "/usr/local/opt/llvm/bin/clangd",
+      "--offset-encoding=utf-16",
+    },
+})
+
+-- javascript/typescript setup.
+nvim_lsp.tsserver.setup({
+    on_attach = on_attach,
 })
 
 -- rustlang setup
-require('lspconfig')['rust_analyzer'].setup({
+nvim_lsp.rust_analyzer.setup({
     on_attach = on_attach,
     capabilities = capabilities,
     flags = lsp_flags,
@@ -171,13 +188,41 @@ require('lspconfig')['rust_analyzer'].setup({
 })
 require("rust-tools").setup()
 
+-- golang setup
+nvim_lsp.gopls.setup{
+  on_attach = on_attach,
+  cmd = {'gopls'},
+  -- for postfix snippets and analyzers
+  capabilities = capabilities,
+      settings = {
+        gopls = {
+          experimentalPostfixCompletions = true,
+          analyses = {
+            unusedparams = true,
+            shadow = true,
+         },
+         staticcheck = true,
+        },
+      },
+}
+
 -- nullls setup
 local null_ls = require("null-ls")
 null_ls.setup({
+    debug=true,
+    on_attach = on_attach,
     sources = {
-        null_ls.builtins.formatting.isort,
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.clang_format,
+      -- Formatting tools
+      null_ls.builtins.formatting.jq, -- json formatter
+      null_ls.builtins.formatting.isort,
+      null_ls.builtins.formatting.clang_format,
+      null_ls.builtins.formatting.goimports_reviser,
+      null_ls.builtins.formatting.goimports_reviser,
+      null_ls.builtins.formatting.golines,
+      null_ls.builtins.formatting.black.with({extra_args={"--line-length", "120"}}),
+      -- Diagnostics Tools.
+      null_ls.builtins.diagnostics.flake8,
+      -- null_ls.builtins.diagnostics.pydocstyle.with({extra_args={"--config=src/setup.cfg"}}),
     },
 })
 null_ls.register({null_ls.builtins.formatting.rustfmt, args = {"-emit=files"}})

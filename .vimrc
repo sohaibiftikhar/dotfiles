@@ -46,6 +46,12 @@ Plug 'simrat39/rust-tools.nvim'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'github/copilot.vim'
+Plug 'jparise/vim-graphql'
+Plug 'jackMort/ChatGPT.nvim'
+" ChatGPT requirements
+Plug 'MunifTanjim/nui.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 call plug#end()
 
 if has('nvim')
@@ -116,7 +122,8 @@ nnoremap <A-P> :Buffers<CR>
 command! -bang -nargs=* MyAg
   \ call fzf#vim#ag(
     \ <q-args>,
-    \ "--ignore-dir={staging,out,build,__pycache_} -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yml|yaml|js|mk|Makefile|cmake|CMakeLists.txt)$'",
+    \ "--ignore-dir={staging,out,build,__pycache_}
+            \ -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yml|yaml|js|graphql|mk|Makefile|cmake|CMakeLists.txt)$'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=1 Cag call CustomAg(<q-args>)
@@ -164,6 +171,7 @@ command! FixImports :!autoflake --in-place --remove-all-unused-imports %
 command! Ccformat :!clang-format -i %
 command! Scratch :e /tmp/scratch.md
 command! Config :e ~/.config/nvim/lua/config.lua
+command! Reload :source ~/.vimrc
 
 " Invoke ag on a custom user specified directory.
 function! CustomAg(directory)
@@ -230,13 +238,13 @@ augroup END
 autocmd BufRead *.clj try | silent! Require | catch /^Fireplace/ | endtry
 " Map tf to terraform
 autocmd BufRead,BufNewFile *.tf set filetype=terraform
+autocmd BufRead,BufNewFile *.geojson set filetype=json
 " Map bzl to python
-" autocmd BufRead,BufNewFile *.bzl set filetype=python
-autocmd BufRead,BufNewFile *.asl set filetype=python
-" autocmd BufRead,BufNewFile *.wafl set filetype=python
-autocmd BufRead,BufNewFile *.sadl set filetype=python
+autocmd BufRead,BufNewFile *.bzl set filetype=python
 " Remove autoindent for python files
 autocmd FileType python setlocal indentkeys-=<:>
+" Use tabs for Makefiles
+autocmd FileType make setlocal noexpandtab
 " Map ansible files
 autocmd BufRead,BufNewFile */ansible/*/*.yml set filetype=ansible syntax=yaml
 autocmd VimEnter * RainbowParenthesesToggle

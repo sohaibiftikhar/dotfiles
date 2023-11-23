@@ -12,8 +12,26 @@ esac
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
 
-# append to the history file, don't overwrite it
-shopt -s histappend
+# if [ -v BASH ]; then
+#   # append to the history file, don't overwrite it
+#   shopt -s histappend
+#   # check the window size after each command and, if necessary,
+#   # update the values of LINES and COLUMNS.
+#   shopt -s checkwinsize
+#   # enable programmable completion features (you don't need to enable
+#   # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+#   # sources /etc/bash.bashrc).
+#   if ! shopt -oq posix; then
+#     if [ -f /usr/share/bash-completion/bash_completion ]; then
+#       . /usr/share/bash-completion/bash_completion
+#     elif [ -f /etc/bash_completion ]; then
+#       . /etc/bash_completion
+#     fi
+#   fi
+# elif [ -v ZSH_VERSION ]; then
+#   # append to the history file, don't overwrite it
+#   setopt APPEND_HISTORY
+# fi
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
@@ -22,13 +40,14 @@ HISTFILESIZE=2000
 # setting for reloading history file every time.
 export PROMPT_COMMAND="history -a; history -n"
 # setup ssh agent askpass
-export SSH_ASKPASS=/usr/bin/ksshaskpass
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
+# export SSH_ASKPASS=/usr/bin/ksshaskpass
+export SSH_AUTH_SOCK="$HOME"/.ssh/ssh-agent.socket
+export SSH_AGENT_PID=`ps -eaf | grep $SSH_AUTH_SOCK | grep -v "grep" | awk '{ print $2 }'`
+# start ssh-agent if not already found.
+if [[ -z "$SSH_AGENT_PID" ]]; then
+export SSH_AGENT_PID=`eval $(ssh-agent -a $SSH_AUTH_SOCK) | awk '{ print $3 }'`
+fi
 export GPG_TTY="$(tty)"
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
@@ -112,18 +131,9 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
 export PATH=$PATH:~/.aws/bin/
 export PATH=$PATH:~/.cargo/bin/
+export PATH="$PATH:/opt/homebrew/opt/node@18/bin"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -133,29 +143,33 @@ export PATH="/home/siftikhar/python/bin:$PATH"
 ## Path changes
 GOHOME=/usr/local/go
 GOPATH=$HOME/go
-ROCKPATH=$HOME/code/recogni/rock
+CODE=$HOME/code/
+export MILYHOME=$HOME/code/mily
+export MILYBACKEND=$MILYHOME/backend/
+export BACKENDCURRENT=$MILYBACKEND/dev0
+PATH=$PATH:$BACKENDCURRENT/src/tools/cmd/
 PATH=$PATH:/opt/cuda/bin
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=$GOHOME/bin:$PATH
 PATH=$GOPATH/bin:$PATH
-PATH=$PATH:$ROCKPATH/out
+PATH=$PATH:/opt/homebrew/bin/
 
 ## my-changes
-export LC_ALL=C.UTF-8
-export LANG=C.UTF-8
-# export LC_ALL=en_US.UTF-8
-# export LANG=en_US.UTF-8
+# export LC_ALL=C.UTF-8
+# export LANG=C.UTF-8
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
 export XDG_HOME=$HOME/.config
 export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
-$HOME/.local/bin/powerline-daemon -q
+powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
 export POWERLINE_PROMPT='$'
-source $HOME/.local/lib/python3.10/site-packages/powerline/bindings/bash/powerline.sh
+source `pip3 show powerline-status | grep -i Location | awk '{print $2}'`/powerline/bindings/zsh/powerline.zsh
 
 ## My Bindings
 export EDITOR=nvim
@@ -163,7 +177,9 @@ export TERM=screen-256color
 alias '..=cd ..'
 alias '...=cd ..; cd ..'
 alias clear_history="clear && tmux clear-history"
-alias dr="cd ~/code/recogni/rock"
+alias dr="cd $MILYHOME/backend/dev0"
+alias webapp="cd $MILYHOME/webapp/dev0"
+alias dd="cd $MILYHOME/adhoc/data"
 alias gr="grep -r"
 alias ta="session=${session:-dev} tmux a -t$session"
 alias tn="dev-tmux"
@@ -174,7 +190,6 @@ alias gs="git status"
 alias ga="git add"
 alias gc="git commit"
 alias gcm="git commit -m "
-alias gco="git checkout "
 alias gpull="git pull origin"
 alias gpr="git pull --rebase origin "
 alias gr="git rebase "
@@ -188,25 +203,26 @@ alias gpushf="git push --force-with-lease "
 alias explorer="xdg-open ."
 alias tf="terraform"
 alias vim="nvim"
-alias cat="bat"
+#alias cat="bat"
 alias htop="btop"
 alias du="ncdu"
 alias df="duf"
-alias jfmt="java -jar ~/.local/lib/java/google-java-format-1.7-all-deps.jar"
-alias bz_compdb="/home/siftikhar/code/external/bazel-compilation-database/generate.sh"
-alias cquery="/home/siftikhar/code/external/cquery/build/release/bin/cquery"
 alias myprs="gh pr list --author='@me'"
-alias mklscconfig="bear -- make -j15 all pyrock test-unit DEBUG=yes"
-alias mkrock="make -j rock DEBUG=YES"
-alias mkrain="make -j20 rain DEBUG=YES"
-alias scorpio=$ROCKPATH/src/test/e2e/scorpio
 alias fix="make -j format-diff"
 alias testall="make -j15 test DEBUG=YES"
-alias testrock="make -j15 test-unit DEBUG=YES"
-alias e2ereport="typora $ROCKPATH/staging/test/e2e/report.md &> /dev/null"
-alias cleanrock="make librock-clean rock-clean roll-clean unroll-clean strip-clean"
+alias ibrew='arch -x86_64 /usr/local/bin/brew'
+alias izsh='arch -x86_64 /bin/zsh'
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
+
+# AWS shortcuts
+alias cf="aws cloudformation"
+
+# alias gco="git checkout "
+function gco()
+{
+    $($HOME/scripts/checkout $@)
+}
 
 function mk()
 {
@@ -220,21 +236,6 @@ function rmbranch()
         git branch -D "$branch"
         git push origin --delete "$branch"
     done
-}
-
-function builddev()
-{
-    docker build -t rock:dev -f ci.Dockerfile .
-}
-
-function launchdev()
-{
-    docker run --rm -it -v $HOME/code/recogni/rock:/opt/rock -v /tmp:/tmp rock:dev bash
-}
-
-function e2etest()
-{
-    make -j15 test-e2e DEBUG=YES NAME=$1
 }
 
 function gpushu () {
@@ -265,25 +266,38 @@ export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
 __fzf_gb__() {
   local cmd branch
   cmd='command git branch --format "%(refname:short)"'
-  eval "$cmd" | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --bind=ctrl-z:ignore \
+  eval "$cmd" | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --bind=ctrl-z:ignore\
     $FZF_DEFAULT_OPTS" $(__fzfcmd) -m "$@" | while read -r item; do
-    printf '%q ' "$item"
+    print "$item"
   done
   echo
 }
+
 fzf-git-branch() {
   local selected="$(__fzf_gb__)"
-  READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$selected${READLINE_LINE:$READLINE_POINT}"
-  READLINE_POINT=$(( READLINE_POINT + ${#selected} ))
+  # READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}$selected${READLINE_LINE:$READLINE_POINT}"
+  # READLINE_POINT=$(( READLINE_POINT + ${#selected} ))
+  LBUFFER="${LBUFFER}${selected}"
+  zle -I
 }
 # must be in this order for fzf to work.
-ssh-add < /dev/null
-[[ $- == *i* ]] && source /usr/share/blesh/ble.sh
-# bind Alt-G to search for git branches in locally checked out branches. Must happen after sourcing ble.sh.
-bind -x '"\eg": fzf-git-branch'
+ssh-add --apple-use-keychain < /dev/null
+
+if [ -v BASH ]; then
+    # bind Alt-G to search for git branches in locally checked out branches. Must happen after sourcing ble.sh.
+    bind -x '"\eg": fzf-git-branch'
+    # blesh completion for bash shells (only posix)
+    [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
+    [[ $- == *i* ]] && source ~/.local/share/blesh/ble.sh
+elif [ -v ZSH_VERSION ]; then
+    # Alt-key for mac-zsh.
+    autoload -Uz compinit; compinit
+    source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    zle -N fzf-git-branch # make a widget
+    bindkey "\x1bg" fzf-git-branch # bind it to a zshell
+fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 # export SDKMAN_DIR="/home/siftikhar/.sdkman"
 # [[ -s "/home/siftikhar/.sdkman/bin/sdkman-init.sh" ]] && source "/home/siftikhar/.sdkman/bin/sdkman-init.sh"
-
