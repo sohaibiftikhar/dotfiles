@@ -1,0 +1,189 @@
+#!/usr/bin/env python
+
+"""Builds prs from a chain as specified in chain.conf"""
+
+import os
+import textwrap
+from typing import Optional
+
+# pip install click
+import click
+import yaml
+from git.objects.commit import Commit
+
+# pip install GitPython
+from git.repo import Repo
+
+# pip install pyyaml
+from yaml.loader import SafeLoader
+
+
+def build_prs(
+    chain: list[tuple[str, int]],
+    commits: list[Commit],
+    taskid: str | None,
+    base: str,
+    testing_information: str,
+    only: int | None,
+    labels: list[str],
+    base_id: int,
+):
+    commit_idx = 0
+    chain_info = dict()
+    join_str = "\n" + " " * 12
+    if testing_information:
+        testing_information = [info.strip() for info in testing_information.split("\n") if info.strip()]
+        testing_information = join_str.join(testing_information)
+    for idx, (branch, num_commits_in_branch) in enumerate(chain):
+        branch_commits = commits[commit_idx : commit_idx + num_commits_in_branch]
+        commit_idx = commit_idx + num_commits_in_branch
+        title = branch_commits[0].summary
+        chain_info[branch] = f"  - #{base_id + idx}"
+
+    commit_idx = 0
+    if only:
+        only = only if only >= 0 else len(chain) + only
+    for idx, (branch, num_commits_in_branch) in enumerate(chain):
+        branch_commits = commits[commit_idx : commit_idx + num_commits_in_branch]
+        commit_idx = commit_idx + num_commits_in_branch
+        current_base = base
+        base = branch
+        title, main_body = branch_commits[0].message.split("\n", 1)
+        title = f"#{taskid}: {title}" if taskid else title
+        commit_messages = [message for message in ([main_body] + branch_commits[1:])]
+        body = "\n".join(commit_messages)
+        body = [line.strip() for line in body.split("\n") if line.strip()]
+        if chain_info and only is None:
+            body.append("")  # newline
+            body.append("This PR is part of a chain of PRs. The chain is as follows")
+            for chain_branch, info in chain_info.items():
+                if branch == chain_branch:
+                    info = f"{info} <-- You are here."
+                body.append(info)
+        body = join_str.join(body)
+        body = textwrap.dedent(
+            f"""\
+            ## Description
+
+            {body}
+
+            ## Testing
+
+            {testing_information}
+
+            ## Checklist
+
+            - [x] I linked corresponding ClickUp issue as explained [here](https://help.clickup.com/hc/en-us/articles/6305771568791-GitHub-integration#h_01HE83MGSDR6K4AM8R6DG0C1ZP).
+            - [x] I have followed the [style guidelines](https://app.clickup.com/24434225/docs/q9nhh-2381/q9nhh-19315).
+            - [x] I have commented my code, especially in hard to understand areas.
+            - [ ] Reviewer has tested changes.
+        """
+        ).strip()
+        command = [
+            f"gh pr create -a '@me' --title '{title}' --body ",
+            f"'{body}'",
+            f"  --base {current_base} --head {branch}",
+        ]
+        for label in labels:
+            command.append(f"  --label '{label}'")
+        sep = "\\\n"
+        if only is None or idx == only:
+            print(sep.join(command))
+
+
+@click.option(
+    "-c",
+    "--config",
+    help="The config file to load for the chain. Default is at $HOME/.config/chain.conf",
+    default=None,
+)
+@click.option(
+    "-b",
+    "--branch",
+    help="The combined branch which sits at the end of the chain. Default is to pick the currently active branch.",
+    default=None,
+)
+@click.option(
+    "-t",
+    "--taskid",
+    help="The task id to associate with the PR.",
+    default=None,
+)
+@click.option(
+    "--base",
+    help="Base branch to target PR to.",
+    default="develop",
+)
+@click.option(
+    "-o",
+    "--only",
+    help="Index of branch in chain to make pr for. Negative indices are supported.",
+    type=int,
+    default=None,
+)
+@click.option(
+    "-l",
+    "--labels",
+    multiple=True,
+    help="Labels to apply while creating pull request.",
+    default=["Type:Feature"],
+)
+@click.option(
+    "-i",
+    "--testing-information",
+    help="Labels to apply while creating pull request.",
+    default=["Type:Feature"],
+)
+@click.option(
+    "--base-id",
+    help="Base PR id.",
+    type=int,
+    default=0,
+)
+@click.command()
+def cli(
+    config: str,
+    branch: Optional[str],
+    taskid: str | None,
+    base: str,
+    only: int | None,
+    labels: tuple[str],
+    testing_information: str,
+    base_id: int,
+) -> None:
+    """Helps create PRs from chained branches."""  # noqa: D301 (Need \b for raw formatting).
+
+    conf_home = os.environ.get("HOME", ".") + "/.config"
+    config = config or f"{conf_home}/chain.conf"
+    tries = (
+        config,
+        f"{conf_home}/{config}",
+        f"{conf_home}/{config}.conf",
+        f"{conf_home}/chain{config}.conf",
+    )
+    found = False
+    for conf in tries:
+        if os.path.exists(conf):
+            config = conf
+            found = True
+            break
+    if not found:
+        raise ValueError("Config file not found. Tried the following locations: ", tries)
+    print(f"# Using config file: {config}")
+    with open(config) as fstream:
+        chain = yaml.load(fstream, SafeLoader)
+    assert isinstance(chain, list)
+
+    repo = Repo(os.environ.get("REPO_PATH"))
+    combined_branch = branch or repo.active_branch
+    num_commits = sum(num_commits_in_branch for _, num_commits_in_branch in chain)
+    commits = list(repo.iter_commits(combined_branch, max_count=num_commits))
+    commits.reverse()
+    expected_commits = sum(num_commits for _, num_commits in chain)
+    assert len(commits) == expected_commits, f"{len(commits)} != {expected_commits}"
+    print(f"# Found {len(commits)} commits in branches in '{chain}'")
+    build_prs(chain, commits, taskid, base, testing_information, only, labels, base_id)
+
+
+if __name__ == "__main__":
+    cli()

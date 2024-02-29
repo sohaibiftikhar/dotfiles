@@ -20,6 +20,9 @@ def main():
         ".tmux-powerlinerc",
         ".vimrc",
         "scripts",
+        ".config/nvim",
+        ".config/powerline",
+        ".config/systemd",
     ]
     for f in dot_files:
         print(f"ln -s `pwd`/{f} $HOME/{f}")

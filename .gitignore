@@ -1,2 +1,3 @@
 .vim/plugged
 .config/nvim/.netrwhist
+*.log

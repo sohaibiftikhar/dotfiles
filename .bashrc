@@ -145,8 +145,9 @@ GOHOME=/usr/local/go
 GOPATH=$HOME/go
 CODE=$HOME/code/
 export MILYHOME=$HOME/code/mily
-export MILYBACKEND=$MILYHOME/backend/
-export BACKENDCURRENT=$MILYBACKEND/dev0
+export MILYBACKEND=$MILYHOME/backend
+export BACKEND=dev0
+export BACKENDCURRENT=$MILYBACKEND/$BACKEND
 PATH=$PATH:$BACKENDCURRENT/src/tools/cmd/
 PATH=$PATH:/opt/cuda/bin
 PATH=$PATH:$HOME/scripts
@@ -154,7 +155,7 @@ PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=$GOHOME/bin:$PATH
 PATH=$GOPATH/bin:$PATH
-PATH=$PATH:/opt/homebrew/bin/
+PATH=/opt/homebrew/bin/:$PATH
 
 ## my-changes
 # export LC_ALL=C.UTF-8
@@ -197,13 +198,13 @@ alias gb="git branch --show-current"
 alias gba="git branch"
 alias grc="git rebase --continue"
 alias gri="git rebase -i"
-alias queue="gh pr comment -b 'bueller r+'"
 alias gpush="git push "
 alias gpushf="git push --force-with-lease "
 alias explorer="xdg-open ."
 alias tf="terraform"
+alias tfm="AWS_PROFILE=sandbox terraform -chdir=infra"
 alias vim="nvim"
-#alias cat="bat"
+alias cat="bat"
 alias htop="btop"
 alias du="ncdu"
 alias df="duf"
@@ -214,6 +215,7 @@ alias ibrew='arch -x86_64 /usr/local/bin/brew'
 alias izsh='arch -x86_64 /bin/zsh'
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
+alias vm="limactl shell default /bin/zsh"
 
 # AWS shortcuts
 alias cf="aws cloudformation"
@@ -222,6 +224,14 @@ alias cf="aws cloudformation"
 function gco()
 {
     $($HOME/scripts/checkout $@)
+}
+
+function mergepr() {
+    if [ -z "$1" ]; then
+        echo "Usage: mergepr <pr-number>"
+        return
+    fi
+    gh pr review $1 --comment -b "/merge-me-please"
 }
 
 function mk()
@@ -281,7 +291,11 @@ fzf-git-branch() {
   zle -I
 }
 # must be in this order for fzf to work.
-ssh-add --apple-use-keychain < /dev/null
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ssh-add --apple-use-keychain < /dev/null
+fi
+# TODO how to make this work for zsh on ubuntu?
 
 if [ -v BASH ]; then
     # bind Alt-G to search for git branches in locally checked out branches. Must happen after sourcing ble.sh.
@@ -290,9 +304,18 @@ if [ -v BASH ]; then
     [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
     [[ $- == *i* ]] && source ~/.local/share/blesh/ble.sh
 elif [ -v ZSH_VERSION ]; then
+    # Package manager for zsh
+    ANTIGEN=/opt/homebrew/share/antigen/antigen.zsh
+    if [[ -f $ANTIGEN ]]; then
+        source /opt/homebrew/share/antigen/antigen.zsh
+        antigen bundle zsh-users/zsh-autosuggestions
+    fi
     # Alt-key for mac-zsh.
     autoload -Uz compinit; compinit
-    source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    HIGHLIGHT_FILE=/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    if [[ -f $HIGHLIGHT_FILE ]]; then
+        source $HIGHLIGHT_FILE
+    fi
     zle -N fzf-git-branch # make a widget
     bindkey "\x1bg" fzf-git-branch # bind it to a zshell
 fi

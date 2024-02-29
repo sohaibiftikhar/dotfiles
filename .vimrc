@@ -12,11 +12,8 @@ Plug 'rgarver/Kwbd.vim'
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'guns/vim-clojure-highlight'
-Plug 'guns/vim-clojure-static'
 Plug 'guns/vim-sexp'
 Plug 'tpope/vim-dispatch'
-Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-repeat'
@@ -47,11 +44,8 @@ Plug 'rafamadriz/friendly-snippets'
 Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'github/copilot.vim'
 Plug 'jparise/vim-graphql'
-Plug 'jackMort/ChatGPT.nvim'
-" ChatGPT requirements
-Plug 'MunifTanjim/nui.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+" Purescript
+Plug 'purescript-contrib/purescript-vim'
 call plug#end()
 
 if has('nvim')
@@ -123,7 +117,7 @@ command! -bang -nargs=* MyAg
   \ call fzf#vim#ag(
     \ <q-args>,
     \ "--ignore-dir={staging,out,build,__pycache_}
-            \ -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yml|yaml|js|graphql|mk|Makefile|cmake|CMakeLists.txt)$'",
+            \ -G '\.(cc|inl|hh|cpp|h|hpp|c|py|yml|yaml|js|graphql|mk|Makefile|cmake|CMakeLists.txt|tf)$'",
     \ fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}),
     \ <bang>0)
 command! -bang -nargs=1 Cag call CustomAg(<q-args>)
@@ -234,8 +228,6 @@ augroup quickfix
     autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
-" Evaluate Clojure buffers on load
-autocmd BufRead *.clj try | silent! Require | catch /^Fireplace/ | endtry
 " Map tf to terraform
 autocmd BufRead,BufNewFile *.tf set filetype=terraform
 autocmd BufRead,BufNewFile *.geojson set filetype=json
@@ -264,7 +256,7 @@ let g:airline_theme = 'dark'
 " vim-surround
 let g:surround_{char2nr('/')} = "/* \r */"
 let g:lsc_auto_map = {'defaults': v:true, 'PreviousReference': '', 'NextReference': ''}
-let g:sexp_filetypes = "clojure, scheme, list, timl, python"
+let g:sexp_filetypes = "scheme, list, timl, python"
 
 " Put these lines at the very end of your vimrc file.
 " Load all plugins now.

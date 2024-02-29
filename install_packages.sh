@@ -25,10 +25,18 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         # https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)
     fi
 else if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    echo "Linux not supported yet"
-    exit 1
+    is_ubuntu=$(cat /etc/os-release | grep -i ubuntu)
+    if [[ -z $is_ubuntu ]]; then
+        echo "Running package install on Ubuntu"
+        sudo apt update
+        sudo apt install -y neovim fzf gh
+        sudo apt install -y btop bat ncdu the_silver_searcher duf go
+        # sudo apt install -y alacritty
+    else
+        echo "Linux not supported yet"
+        exit 1
+    fi
 fi
-
 # Fonts installation is also important.
 # TODO: Add a README and the details there?
 # Fonts: install powerline nerdfont (note this needs to be in your local system not on the remote system)

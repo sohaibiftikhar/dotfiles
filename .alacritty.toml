@@ -1,0 +1,88 @@
+[font]
+size = 18.0
+
+[font.bold]
+family = "MesloLGLDZ Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "MesloLGLDZ Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "MesloLGLDZ Nerd Font"
+style = "Regular"
+
+[[hints.enabled]]
+command = "open"
+hyperlinks = true
+post_processing = true
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+
+[hints.enabled.binding]
+key = "U"
+mods = "Control|Shift"
+
+[hints.enabled.mouse]
+enabled = true
+mods = "None"
+
+[[keyboard.bindings]]
+action = "ToggleFullScreen"
+key = "F11"
+
+[[keyboard.bindings]]
+chars = "\u001Bj"
+key = "J"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001Bk"
+key = "K"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001Bh"
+key = "H"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001Bl"
+key = "L"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001Bg"
+key = "G"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001BP"
+key = "P"
+mods = "Alt|Shift"
+
+[[keyboard.bindings]]
+chars = "\u001Bp"
+key = "P"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001BOH"
+key = "A"
+mode = "AppCursor"
+mods = "Control"
+
+[[keyboard.bindings]]
+chars = "\u001BOF"
+key = "E"
+mode = "AppCursor"
+mods = "Control"
+
+[[keyboard.bindings]]
+chars = "\u001BOD"
+key = "K"
+mode = "AppCursor"
+mods = "Control"
+
+[window.class]
+option_as_alt = "OnlyLeft"

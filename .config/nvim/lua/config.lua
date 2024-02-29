@@ -137,7 +137,9 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<space>F', function() vim.lsp.buf.format { async = true } end, bufopts)
+  vim.keymap.set('n', '<space>F', function() vim.lsp.buf.format {
+      async = true,
+      filter = function(client) return client.name ~= "tsserver" end } end, bufopts)
 end
 
 local home = os.getenv("HOME")
@@ -206,6 +208,32 @@ nvim_lsp.gopls.setup{
       },
 }
 
+-- terraform language server
+nvim_lsp.terraformls.setup({
+    on_attach = on_attach,
+})
+-- vim.api.nvim_create_autocmd({"BufWritePre"}, {
+--   pattern = {"*.tf", "*.tfvars"},
+--   callback = function()
+--     vim.lsp.buf.format()
+--   end,
+-- })
+
+
+-- purescript language server
+nvim_lsp.purescriptls.setup {
+  on_attach = on_attach,
+  settings = {
+    purescript = {
+      addSpagoSources = true, -- e.g. any purescript language-server config here
+      formatter = "purs-tidy"
+    }
+  },
+  flags = {
+    debounce_text_changes = 150,
+  }
+}
+
 -- nullls setup
 local null_ls = require("null-ls")
 null_ls.setup({
@@ -216,13 +244,15 @@ null_ls.setup({
       null_ls.builtins.formatting.jq, -- json formatter
       null_ls.builtins.formatting.isort,
       null_ls.builtins.formatting.clang_format,
+      null_ls.builtins.formatting.prettierd,
       null_ls.builtins.formatting.goimports_reviser,
       null_ls.builtins.formatting.goimports_reviser,
       null_ls.builtins.formatting.golines,
       null_ls.builtins.formatting.black.with({extra_args={"--line-length", "120"}}),
       -- Diagnostics Tools.
       null_ls.builtins.diagnostics.flake8,
-      -- null_ls.builtins.diagnostics.pydocstyle.with({extra_args={"--config=src/setup.cfg"}}),
+      null_ls.builtins.diagnostics.eslint,
+      null_ls.builtins.code_actions.eslint,
     },
 })
 null_ls.register({null_ls.builtins.formatting.rustfmt, args = {"-emit=files"}})
