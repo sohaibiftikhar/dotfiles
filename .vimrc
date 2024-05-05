@@ -94,7 +94,7 @@ set showmatch " highlight matching
 set incsearch " search as characters are entered
 set hlsearch " highlight matches
 set nocompatible " for all practical cases a noop
-set colorcolumn=120,140 " 120 character vertical line
+set colorcolumn=80,120,140 " 120 character vertical line
 
 let $FZF_DEFAULT_COMMAND='ag --column --nocolor -g ""'
 
@@ -193,6 +193,12 @@ endfunction
 
 command! Bzlformat call BzlFormat()
 
+function! PlzFormat()
+  execute "!plz format -w %"
+endfunction
+
+command! PlzFormat call PlzFormat()
+
 " Markdown plugin
 autocmd BufRead *.md nnoremap <C-m> :!grip --export % /tmp/expand('%:t').html && google-chrome /tmp/%.html<CR>
 
@@ -233,6 +239,9 @@ autocmd BufRead,BufNewFile *.tf set filetype=terraform
 autocmd BufRead,BufNewFile *.geojson set filetype=json
 " Map bzl to python
 autocmd BufRead,BufNewFile *.bzl set filetype=python
+" Map build system files to python
+autocmd BufRead,BufNewFile *.bzl set syntax=python
+autocmd BufRead,BufNewFile *.build_defs set syntax=python
 " Remove autoindent for python files
 autocmd FileType python setlocal indentkeys-=<:>
 " Use tabs for Makefiles
