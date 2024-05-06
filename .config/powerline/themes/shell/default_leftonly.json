@@ -1,6 +1,7 @@
 {
   "segments": {
-    "above": [{
+    "above": [
+      {
         "left": [
           {
             "function": "powerline.segments.common.net.hostname",
@@ -11,7 +12,7 @@
             "priority": 30,
             "draw_soft_divider": false,
             "after": " ",
-            "before": "ⓔ " 
+            "before": "ⓔ "
           },
           {
             "function": "powerline.segments.shell.cwd",
@@ -23,16 +24,23 @@
           },
           {
             "function": "powerline_gitstatus.gitstatus",
-            "priority": 40 
+            "priority": 40
           }
-        ]            
-    }],
+        ]
+      }
+    ],
     "left": [
-         {
-            "function": "powerline.segments.common.env.environment",
-            "priority": 40 ,
-            "args": { "variable": "POWERLINE_PROMPT" }
-          }
+      {
+        "function": "powerline.segments.shell.last_status",
+        "priority": 50
+      },
+      {
+        "function": "powerline.segments.common.env.environment",
+        "priority": 10,
+        "args": {
+          "variable": "POWERLINE_PROMPT"
+        }
+      }
     ]
   }
 }

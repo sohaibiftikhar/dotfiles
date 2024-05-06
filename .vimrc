@@ -42,10 +42,16 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'simrat39/rust-tools.nvim'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'jose-elias-alvarez/null-ls.nvim'
-Plug 'github/copilot.vim'
 Plug 'jparise/vim-graphql'
 " Purescript
 Plug 'purescript-contrib/purescript-vim'
+" CoPilot
+Plug 'github/copilot.vim'
+" CoPilot Chat
+" Plug 'zbirenbaum/copilot.lua'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'canary' }
+
 call plug#end()
 
 if has('nvim')

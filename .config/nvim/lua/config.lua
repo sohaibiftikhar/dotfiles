@@ -237,14 +237,24 @@ nvim_lsp.purescriptls.setup {
 -- nullls setup
 local null_ls = require("null-ls")
 null_ls.setup({
-    debug=true,
+    -- debug=true,
     on_attach = on_attach,
     sources = {
       -- Formatting tools
       null_ls.builtins.formatting.jq, -- json formatter
       null_ls.builtins.formatting.isort,
       null_ls.builtins.formatting.clang_format,
-      null_ls.builtins.formatting.prettierd,
+      null_ls.builtins.formatting.eslint_d,
+      null_ls.builtins.formatting.prettierd.with({
+          filetypes = {
+            "css",
+            "scss",
+            "less",
+            "html",
+            "yaml",
+            "graphql",
+        },
+      }),
       null_ls.builtins.formatting.goimports_reviser,
       null_ls.builtins.formatting.goimports_reviser,
       null_ls.builtins.formatting.golines,
@@ -261,3 +271,9 @@ null_ls.register({null_ls.builtins.formatting.rustfmt, args = {"-emit=files"}})
 require("trouble").setup()
 
 -- End LSP setup. --
+
+-- CoPilot
+require("CopilotChat").setup {
+  -- debug = true, -- Enable debugging
+  -- See Configuration section for rest
+}

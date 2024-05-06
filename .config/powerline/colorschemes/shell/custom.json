@@ -1,6 +1,16 @@
 {
   "name": "Default color scheme for shell prompts",
   "groups": {
+    "date": {
+      "fg": "white",
+      "bg": "darkestblue",
+      "attrs": []
+    },
+    "exit_fail": {
+      "fg": "white",
+      "bg": "darkestred",
+      "attrs": []
+    },
     "hostname": {
       "fg": "black",
       "bg": "skyblue1",
@@ -31,14 +41,15 @@
     "mode": {
       "fg": "darkestgreen",
       "bg": "brightgreen",
-      "attrs": ["bold"]
+      "attrs": [
+        "bold"
+      ]
     },
     "attached_clients": {
       "fg": "white",
       "bg": "darkestgreen",
       "attrs": []
     },
-
     "gitstatus": {
       "fg": "gray8",
       "bg": "gray2",
@@ -116,7 +127,9 @@
         "mode": {
           "fg": "darkestcyan",
           "bg": "white",
-          "attrs": ["bold"]
+          "attrs": [
+            "bold"
+          ]
         }
       }
     }

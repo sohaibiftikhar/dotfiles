@@ -132,17 +132,17 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 export PATH=$PATH:~/.aws/bin/
+# Rust package manager.
 export PATH=$PATH:~/.cargo/bin/
-export PATH="$PATH:/opt/homebrew/opt/node@18/bin"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export PATH="/home/siftikhar/python/bin:$PATH"
+if [[ -d /opt/homebrew/opt/node/bin ]]; then
+    export PATH=$PATH:/opt/homebrew/opt/node/bin
+fi
 
 ## Path changes
-GOHOME=/usr/local/go
-GOPATH=$HOME/go
 CODE=$HOME/code/
 export MILYHOME=$HOME/code/mily
 export MILYBACKEND=$MILYHOME/backend
@@ -153,8 +153,6 @@ PATH=$PATH:/opt/cuda/bin
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
-PATH=$GOHOME/bin:$PATH
-PATH=$GOPATH/bin:$PATH
 PATH=/opt/homebrew/bin/:$PATH
 
 ## my-changes
@@ -268,6 +266,24 @@ function codot() {
   test $1 && xdot <(unzip -p "$1" "*.dot")
 }
 
+# Terraform shortcuts
+function devplan() {
+    tfm plan -var-file=dev.tfvars -out /tmp/$(tfm workspace show).plan
+}
+function devapply() {
+    tfm apply /tmp/$(tfm workspace show).plan
+}
+function _myplan() {
+    tfm plan -refresh=false -out /tmp/$(tfm workspace show).plan
+}
+function myplan() {
+    tfm plan -out /tmp/$(tfm workspace show).plan
+}
+function myapply() {
+    tfm apply /tmp/$(tfm workspace show).plan
+}
+# End Terraform shortcuts
+
 # FZF Commands
 export FZF_DEFAULT_COMMAND='ag --nocolor --column -g ""'
 export FZF_ALT_C_COMMAND='fdfind -t d ""'
@@ -321,6 +337,4 @@ elif [ -v ZSH_VERSION ]; then
 fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-# export SDKMAN_DIR="/home/siftikhar/.sdkman"
-# [[ -s "/home/siftikhar/.sdkman/bin/sdkman-init.sh" ]] && source "/home/siftikhar/.sdkman/bin/sdkman-init.sh"
+source "$HOME/.cargo/env"
