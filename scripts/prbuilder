@@ -2,7 +2,9 @@
 
 """Builds prs from a chain as specified in chain.conf"""
 
+import json
 import os
+import subprocess
 import textwrap
 from typing import Optional
 
@@ -21,16 +23,29 @@ from yaml.loader import SafeLoader
 def build_prs(
     chain: list[tuple[str, int]],
     commits: list[Commit],
-    taskid: str | None,
+    taskid: tuple[str],
     base: str,
     testing_information: str,
     only: int | None,
     labels: list[str],
     base_id: int,
+    draft: bool,
 ):
     commit_idx = 0
     chain_info = dict()
     join_str = "\n" + " " * 12
+    chain = [(branch, num_commits_in_branch) for branch, num_commits_in_branch in chain if num_commits_in_branch > 0]
+    if taskid:
+        if len(taskid) == 1:
+            task_ids = [taskid[0] for _ in range(len(chain))]
+        else:
+            assert len(taskid) == len(
+                chain
+            ), "Number of taskids should match number of branches if more than one is supplied."
+            task_ids = [taskid[idx] for idx in range(len(chain))]
+    else:
+        task_ids = [None for _ in range(len(chain))]
+    taskid = taskid[0] if len(taskid) == 1 else [None]
     if testing_information:
         testing_information = [info.strip() for info in testing_information.split("\n") if info.strip()]
         testing_information = join_str.join(testing_information)
@@ -49,7 +64,7 @@ def build_prs(
         current_base = base
         base = branch
         title, main_body = branch_commits[0].message.split("\n", 1)
-        title = f"#{taskid}: {title}" if taskid else title
+        title = f"#{task_ids[idx]}: {title}" if task_ids[idx] else title
         commit_messages = [message for message in ([main_body] + branch_commits[1:])]
         body = "\n".join(commit_messages)
         body = [line.strip() for line in body.split("\n") if line.strip()]
@@ -79,6 +94,7 @@ def build_prs(
             - [ ] Reviewer has tested changes.
         """
         ).strip()
+        body = body.replace("'", "''")
         command = [
             f"gh pr create -a '@me' --title '{title}' --body ",
             f"'{body}'",
@@ -86,9 +102,21 @@ def build_prs(
         ]
         for label in labels:
             command.append(f"  --label '{label}'")
+        if draft:
+            command.append("  --draft")
         sep = "\\\n"
         if only is None or idx == only:
             print(sep.join(command))
+
+
+def get_next_pr_id() -> int:
+    """Returns the next pr ID to use using the github cli."""
+    probjs = json.loads(
+        subprocess.check_output(["gh", "pr", "list", "--state", "all", "--limit", "1", "--json", "number"]).decode(
+            "utf-8"
+        )
+    )
+    return [obj["number"] for obj in probjs][0] + 1
 
 
 @click.option(
@@ -107,7 +135,8 @@ def build_prs(
     "-t",
     "--taskid",
     help="The task id to associate with the PR.",
-    default=None,
+    default=[],
+    multiple=True,
 )
 @click.option(
     "--base",
@@ -131,25 +160,31 @@ def build_prs(
 @click.option(
     "-i",
     "--testing-information",
-    help="Labels to apply while creating pull request.",
-    default=["Type:Feature"],
+    help="Testing description to add to PR body.",
+    default="- [x] Unit tests were added as part of the PR.",
 )
 @click.option(
     "--base-id",
     help="Base PR id.",
     type=int,
-    default=0,
+    default=None,
+)
+@click.option(
+    "--draft",
+    help="Create PR as draft.",
+    is_flag=True,
 )
 @click.command()
 def cli(
     config: str,
     branch: Optional[str],
-    taskid: str | None,
+    taskid: tuple[str],
     base: str,
     only: int | None,
     labels: tuple[str],
     testing_information: str,
-    base_id: int,
+    base_id: int | None,
+    draft: bool,
 ) -> None:
     """Helps create PRs from chained branches."""  # noqa: D301 (Need \b for raw formatting).
 
@@ -173,6 +208,8 @@ def cli(
     with open(config) as fstream:
         chain = yaml.load(fstream, SafeLoader)
     assert isinstance(chain, list)
+    if base_id is None:
+        base_id = get_next_pr_id()
 
     repo = Repo(os.environ.get("REPO_PATH"))
     combined_branch = branch or repo.active_branch
@@ -182,7 +219,7 @@ def cli(
     expected_commits = sum(num_commits for _, num_commits in chain)
     assert len(commits) == expected_commits, f"{len(commits)} != {expected_commits}"
     print(f"# Found {len(commits)} commits in branches in '{chain}'")
-    build_prs(chain, commits, taskid, base, testing_information, only, labels, base_id)
+    build_prs(chain, commits, taskid, base, testing_information, only, labels, base_id, draft)
 
 
 if __name__ == "__main__":

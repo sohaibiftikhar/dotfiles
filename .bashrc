@@ -45,6 +45,7 @@ export SSH_AUTH_SOCK="$HOME"/.ssh/ssh-agent.socket
 export SSH_AGENT_PID=`ps -eaf | grep $SSH_AUTH_SOCK | grep -v "grep" | awk '{ print $2 }'`
 # start ssh-agent if not already found.
 if [[ -z "$SSH_AGENT_PID" ]]; then
+rm -f $SSH_AUTH_SOCK
 export SSH_AGENT_PID=`eval $(ssh-agent -a $SSH_AUTH_SOCK) | awk '{ print $3 }'`
 fi
 export GPG_TTY="$(tty)"
@@ -142,16 +143,24 @@ if [[ -d /opt/homebrew/opt/node/bin ]]; then
     export PATH=$PATH:/opt/homebrew/opt/node/bin
 fi
 
+function linkcmd {
+    worktree=${1:-dev0}
+    if [[ -d $HOME/.local/milycmd ]]; then
+        unlink $HOME/.local/milycmd
+    fi
+    ln -s $MILYBACKEND/$worktree/src/tools/cmd $HOME/.local/milycmd
+}
+
 ## Path changes
 CODE=$HOME/code/
 export MILYHOME=$HOME/code/mily
 export MILYBACKEND=$MILYHOME/backend
-export BACKEND=dev0
+export BACKEND=dev1
 export BACKENDCURRENT=$MILYBACKEND/$BACKEND
-PATH=$PATH:$BACKENDCURRENT/src/tools/cmd/
 PATH=$PATH:/opt/cuda/bin
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
+PATH=$PATH:$HOME/.local/milycmd
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=/opt/homebrew/bin/:$PATH
 
@@ -167,8 +176,8 @@ export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
 powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
-export POWERLINE_PROMPT='$'
-source `pip3 show powerline-status | grep -i Location | awk '{print $2}'`/powerline/bindings/zsh/powerline.zsh
+export POWERLINE_PROMPT='λ'
+source `pip_system show powerline-status | grep -i Location | awk '{print $2}'`/powerline/bindings/zsh/powerline.zsh
 
 ## My Bindings
 export EDITOR=nvim
@@ -200,7 +209,6 @@ alias gpush="git push "
 alias gpushf="git push --force-with-lease "
 alias explorer="xdg-open ."
 alias tf="terraform"
-alias tfm="AWS_PROFILE=sandbox terraform -chdir=infra"
 alias vim="nvim"
 alias cat="bat"
 alias htop="btop"
@@ -215,21 +223,10 @@ alias izsh='arch -x86_64 /bin/zsh'
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
 alias vm="limactl shell default /bin/zsh"
 
-# AWS shortcuts
-alias cf="aws cloudformation"
-
 # alias gco="git checkout "
 function gco()
 {
     $($HOME/scripts/checkout $@)
-}
-
-function mergepr() {
-    if [ -z "$1" ]; then
-        echo "Usage: mergepr <pr-number>"
-        return
-    fi
-    gh pr review $1 --comment -b "/merge-me-please"
 }
 
 function mk()
@@ -267,23 +264,61 @@ function codot() {
 }
 
 # Terraform shortcuts
-function devplan() {
-    tfm plan -var-file=dev.tfvars -out /tmp/$(tfm workspace show).plan
+function tfm() {
+    if [[ "$@" == "workspace show" ]]; then
+        TIME_CMD=""
+    else
+        TIME_CMD="time"
+    fi
+    AWS_PROFILE=${AWS_PROFILE:-sandbox} $TIME_CMD terraform -chdir=infra $@
 }
-function devapply() {
-    tfm apply /tmp/$(tfm workspace show).plan
+function _plan() {
+    profile=${1:-sandbox}
+    workspace=$(tfm workspace show)
+    var_file=${workspace}.tfvars
+    AWS_PROFILE=$profile tfm plan -refresh=false -var-file=$var_file -out /tmp/${workspace}.plan $@
 }
-function _myplan() {
-    tfm plan -refresh=false -out /tmp/$(tfm workspace show).plan
+function _planapply() {
+    profile=${1:-sandbox}
+    workspace=$(tfm workspace show)
+    var_file=${workspace}.tfvars
+    AWS_PROFILE=$profile tfm apply -refresh=false -var-file=$var_file -auto-approve
 }
-function myplan() {
-    tfm plan -out /tmp/$(tfm workspace show).plan
+function plan() {
+    profile=${1:-sandbox}
+    workspace=$(tfm workspace show)
+    var_file=${workspace}.tfvars
+    AWS_PROFILE=$profile tfm plan -var-file=$var_file -out /tmp/${workspace}.plan
 }
-function myapply() {
-    tfm apply /tmp/$(tfm workspace show).plan
+function planapply() {
+    profile=${1:-sandbox}
+    workspace=$(tfm workspace show)
+    var_file=${workspace}.tfvars
+    AWS_PROFILE=$profile tfm apply -var-file=$var_file -auto-approve
 }
-# End Terraform shortcuts
-
+function tapply() {
+    profile=${1:-sandbox}
+    AWS_PROFILE=$profile tfm apply /tmp/$(tfm workspace show).plan
+}
+function docker_login() {
+  AWS_PROFILE=${1:-default}
+  echo "Logging into ECR with profile '$AWS_PROFILE'"
+  ACCOUNT_ID=$(AWS_PROFILE=$AWS_PROFILE aws sts get-caller-identity --query Account --output text)
+  REPO=$ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
+  AWS_PROFILE=$AWS_PROFILE aws ecr get-login-password | docker login --username AWS --password-stdin $REPO
+}
+function format_json() {
+    # Format all json files in a directory or a single file if $1 points to file inplace.
+    if [ -d "$1" ]; then
+        # outer quote is important to turn into array.
+        files=( $(ag -l --nocolor --column -g "\.json" $1) )
+        for file in $files; do
+            jq . $file > $file.tmp && mv $file.tmp $file
+        done
+    else
+        jq . $1 > $1.tmp && mv $1.tmp $1
+    fi
+}
 # FZF Commands
 export FZF_DEFAULT_COMMAND='ag --nocolor --column -g ""'
 export FZF_ALT_C_COMMAND='fdfind -t d ""'
@@ -325,6 +360,7 @@ elif [ -v ZSH_VERSION ]; then
     if [[ -f $ANTIGEN ]]; then
         source /opt/homebrew/share/antigen/antigen.zsh
         antigen bundle zsh-users/zsh-autosuggestions
+        antigen apply
     fi
     # Alt-key for mac-zsh.
     autoload -Uz compinit; compinit

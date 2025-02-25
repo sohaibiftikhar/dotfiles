@@ -139,7 +139,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<space>F', function() vim.lsp.buf.format {
       async = true,
-      filter = function(client) return client.name ~= "tsserver" end } end, bufopts)
+      filter = function(client) return client.name ~= "ts_ls" end } end, bufopts)
 end
 
 local home = os.getenv("HOME")
@@ -167,13 +167,14 @@ nvim_lsp.clangd.setup({
     capabilities = capabilities,
     flags = lsp_flags,
     cmd = {
-      "/usr/local/opt/llvm/bin/clangd",
+      "/opt/homebrew/opt/llvm/bin/clangd",
+      "--clang-tidy",
       "--offset-encoding=utf-16",
     },
 })
 
 -- javascript/typescript setup.
-nvim_lsp.tsserver.setup({
+nvim_lsp.ts_ls.setup({
     on_attach = on_attach,
 })
 
@@ -253,6 +254,7 @@ null_ls.setup({
             "html",
             "yaml",
             "graphql",
+            "javascript",
         },
       }),
       null_ls.builtins.formatting.goimports_reviser,

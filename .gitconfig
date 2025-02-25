@@ -4,5 +4,16 @@ commentChar = %
 [alias]
 count-lines = "! git log --author=\"$1\" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf \"added lines: %s, removed lines: %s, total lines: %s\\n\", add, subs, loc }' #"
 resettime = "! git commit --amend --reset-author --no-edit"
+ignored = "! git ls-files . --ignored --exclude-standard --others | grep -vE '(infra/.terraform|infra/builds|infra/third-party-modules|resources/.cache|infra/.*\\.tfvars)'"
+prev = "rev-parse HEAD"
+fame = "! git ls-tree -r -z --name-only HEAD -- * | xargs -0 -n1 git blame --line-porcelain HEAD | grep -ae '^author ' |sort| uniq -c| sort -nr"
 [pull]
 rebase = true
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[user]
+	name = Sohaib Iftikhar
+	email = sohaib@milytech.com

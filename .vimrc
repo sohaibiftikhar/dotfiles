@@ -49,9 +49,11 @@ Plug 'purescript-contrib/purescript-vim'
 Plug 'github/copilot.vim'
 " CoPilot Chat
 " Plug 'zbirenbaum/copilot.lua'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'canary' }
-
+Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'main' }
+" Jsonnet support
+Plug 'google/vim-jsonnet'
+" CSV support
+Plug 'chrisbra/csv.vim'
 call plug#end()
 
 if has('nvim')
@@ -60,6 +62,8 @@ if has('nvim')
   set shortmess-=F
 endif
 syntax on
+" Set syntax highlighting only until the 200th column.
+set synmaxcol=200
 filetype plugin indent on
 
 " Alt key mappings. Not needed for neovim
@@ -143,7 +147,7 @@ nnoremap <leader>q :cclose<CR>
 nnoremap <leader>z :pclose<CR>
 nnoremap <leader>ln :se nu!<CR>
 nnoremap <leader>ls :NvimTreeToggle<CR>
-nnoremap <leader>tt :TroubleToggle<CR>
+nnoremap <leader>tt :Trouble diagnostics toggle<CR>
 nnoremap <leader>lf :NvimTreeFindFile<CR>
 nnoremap <leader>hh <C-w>h
 nnoremap <leader>ll <C-w>l
@@ -212,6 +216,8 @@ let g:termdebug_wide=1
 let g:vim_markdown_folding_disabled = 1
 let vim_markdown_override_foldtext = 0
 let g:vim_markdown_new_list_item_indent = 2
+let g:javascript_fold = 1
+let g:python_fold = 1
 let @q = 'di""hp'
 let &grepprg="ag --nogroup --column --nocolor --vimgrep"
 
