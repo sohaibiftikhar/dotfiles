@@ -333,9 +333,9 @@ fzf-git-branch() {
 }
 # must be in this order for fzf to work.
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    ssh-add --apple-use-keychain < /dev/null
-fi
+# if [[ "$OSTYPE" == "darwin"* ]]; then
+#     ssh-add --apple-use-keychain < /dev/null
+# fi
 # TODO how to make this work for zsh on ubuntu?
 
 if [ -v BASH ]; then
