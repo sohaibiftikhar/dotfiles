@@ -134,7 +134,13 @@ fi
 
 export PATH=$PATH:~/.aws/bin/
 # Rust package manager.
-export PATH=$PATH:~/.cargo/bin/
+if [[ -d "~/.cargo/.bin" ]] then
+  export PATH=$PATH:~/.cargo/bin/
+fi
+
+if [[ -f "~/.cargo/env" ]] then
+  source ~/.cargo/env
+fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -143,24 +149,11 @@ if [[ -d /opt/homebrew/opt/node/bin ]]; then
     export PATH=$PATH:/opt/homebrew/opt/node/bin
 fi
 
-function linkcmd {
-    worktree=${1:-dev0}
-    if [[ -d $HOME/.local/milycmd ]]; then
-        unlink $HOME/.local/milycmd
-    fi
-    ln -s $MILYBACKEND/$worktree/src/tools/cmd $HOME/.local/milycmd
-}
-
 ## Path changes
 CODE=$HOME/code/
-export MILYHOME=$HOME/code/mily
-export MILYBACKEND=$MILYHOME/backend
-export BACKEND=dev1
-export BACKENDCURRENT=$MILYBACKEND/$BACKEND
 PATH=$PATH:/opt/cuda/bin
 PATH=$PATH:$HOME/scripts
 PATH=$PATH:$HOME/.local/bin
-PATH=$PATH:$HOME/.local/milycmd
 PATH=$PATH:/usr/local/opt/llvm/bin:/usr/lib/llvm-13/bin/
 PATH=/opt/homebrew/bin/:$PATH
 
@@ -177,7 +170,7 @@ powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
 POWERLINE_BASH_SELECT=1
 export POWERLINE_PROMPT='λ'
-source `pip_system show powerline-status | grep -i Location | awk '{print $2}'`/powerline/bindings/zsh/powerline.zsh
+source `pip3 show powerline-status | grep -i Location | awk '{print $2}'`/powerline/bindings/zsh/powerline.zsh
 
 ## My Bindings
 export EDITOR=nvim
@@ -185,9 +178,6 @@ export TERM=screen-256color
 alias '..=cd ..'
 alias '...=cd ..; cd ..'
 alias clear_history="clear && tmux clear-history"
-alias dr="cd $MILYHOME/backend/dev0"
-alias webapp="cd $MILYHOME/webapp/dev0"
-alias dd="cd $MILYHOME/adhoc/data"
 alias gr="grep -r"
 alias ta="session=${session:-dev} tmux a -t$session"
 alias tn="dev-tmux"
@@ -343,9 +333,9 @@ fzf-git-branch() {
 }
 # must be in this order for fzf to work.
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    ssh-add --apple-use-keychain < /dev/null
-fi
+# if [[ "$OSTYPE" == "darwin"* ]]; then
+#     ssh-add --apple-use-keychain < /dev/null
+# fi
 # TODO how to make this work for zsh on ubuntu?
 
 if [ -v BASH ]; then
@@ -372,5 +362,3 @@ elif [ -v ZSH_VERSION ]; then
     bindkey "\x1bg" fzf-git-branch # bind it to a zshell
 fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-source "$HOME/.cargo/env"

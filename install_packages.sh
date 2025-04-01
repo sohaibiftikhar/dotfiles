@@ -14,7 +14,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         # ncdu -> du but better
         # the_silver_searcher -> grep but MUCH better
         # duf -> df but better
-        brew btop bat ncdu the_silver_searcher duf go
+        brew install btop bat ncdu the_silver_searcher duf go
         # Alacritty is a terminal emulator that is GPU accelerated.
         # No features == Super fast
         brew install --cask alacrity

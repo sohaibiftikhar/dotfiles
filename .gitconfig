@@ -16,4 +16,7 @@ rebase = true
 	clean = git-lfs clean -- %f
 [user]
 	name = Sohaib Iftikhar
-	email = sohaib@milytech.com
+	email = sohaib1692@gmail.com
+	signingkey = /Users/sohaibiftikhar/.ssh/id_rsa.pub
+[gpg]
+	format = ssh
