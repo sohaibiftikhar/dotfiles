@@ -12,43 +12,12 @@ esac
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
 
-# if [ -v BASH ]; then
-#   # append to the history file, don't overwrite it
-#   shopt -s histappend
-#   # check the window size after each command and, if necessary,
-#   # update the values of LINES and COLUMNS.
-#   shopt -s checkwinsize
-#   # enable programmable completion features (you don't need to enable
-#   # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-#   # sources /etc/bash.bashrc).
-#   if ! shopt -oq posix; then
-#     if [ -f /usr/share/bash-completion/bash_completion ]; then
-#       . /usr/share/bash-completion/bash_completion
-#     elif [ -f /etc/bash_completion ]; then
-#       . /etc/bash_completion
-#     fi
-#   fi
-# elif [ -v ZSH_VERSION ]; then
-#   # append to the history file, don't overwrite it
-#   setopt APPEND_HISTORY
-# fi
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+# For setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
 
 # setting for reloading history file every time.
 export PROMPT_COMMAND="history -a; history -n"
-# setup ssh agent askpass
-# export SSH_ASKPASS=/usr/bin/ksshaskpass
-export SSH_AUTH_SOCK="$HOME"/.ssh/ssh-agent.socket
-export SSH_AGENT_PID=`ps -eaf | grep $SSH_AUTH_SOCK | grep -v "grep" | awk '{ print $2 }'`
-# start ssh-agent if not already found.
-if [[ -z "$SSH_AGENT_PID" ]]; then
-rm -f $SSH_AUTH_SOCK
-export SSH_AGENT_PID=`eval $(ssh-agent -a $SSH_AUTH_SOCK) | awk '{ print $3 }'`
-fi
-export GPG_TTY="$(tty)"
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
@@ -163,8 +132,6 @@ PATH=/opt/homebrew/bin/:$PATH
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
-
-export XDG_HOME=$HOME/.config
 export GITHUB_AUTHOR="Sohaib Iftikhar <sohaib1692@gmail.com>"
 powerline-daemon -q
 POWERLINE_BASH_CONTINUATION=1
@@ -183,13 +150,23 @@ alias ta="session=${session:-dev} tmux a -t$session"
 alias tn="dev-tmux"
 alias tk="dev-kill"
 alias ts="tmux ls"
+alias dev0="hgd dev0"
+alias dev1="hgd dev1"
+alias h="hg"
+alias hl="hg xl"
+alias hs="hg status"
+alias ha="hg add "
+alias hc="hg commit "
+alias hcm="hg commit -m "
+alias hpr="hg sync"
+alias hreset="hg revert -r p4base"
+# Same but for Git.
 alias g="git "
 alias gs="git status"
 alias ga="git add"
 alias gc="git commit"
 alias gcm="git commit -m "
-alias gpull="git pull origin"
-alias gpr="git pull --rebase origin "
+alias gpr="git pull --rebase "
 alias gr="git rebase "
 alias gb="git branch --show-current"
 alias gba="git branch"
@@ -197,23 +174,18 @@ alias grc="git rebase --continue"
 alias gri="git rebase -i"
 alias gpush="git push "
 alias gpushf="git push --force-with-lease "
-alias explorer="xdg-open ."
 alias tf="terraform"
 alias vim="nvim"
-alias cat="bat"
+alias cat="batcat"
 alias htop="btop"
 alias du="ncdu"
 alias df="duf"
-alias myprs="gh pr list --author='@me'"
-alias fix="make -j format-diff"
-alias testall="make -j15 test DEBUG=YES"
-alias ibrew='arch -x86_64 /usr/local/bin/brew'
-alias izsh='arch -x86_64 /bin/zsh'
+alias bb="blaze build"
+alias bt="blaze test"
+alias runit="blaze run"
 # Arch only. Remove orphaned packages.
 alias orphans='[[ -n $(pacman -Qdt) ]] && sudo pacman -Rs $(pacman -Qdtq) || echo "no orphans to remove"'
-alias vm="limactl shell default /bin/zsh"
 
-# alias gco="git checkout "
 function gco()
 {
     $($HOME/scripts/checkout $@)
@@ -238,10 +210,6 @@ function gpushu () {
   git push -u origin $branch
 }
 
-function awssh () {
-  ssh `aws ec2 describe-instances --filter Name=tag:Name,Values=$1 | jq -r '.Reservations[].Instances[] | select(.State.Name=="running") | .PrivateIpAddress'`
-}
-
 function print_chain() {
   base=`git branch --show-current`
   gh pr list --search "is:open base:$base"
@@ -253,52 +221,8 @@ function codot() {
   test $1 && xdot <(unzip -p "$1" "*.dot")
 }
 
-# Terraform shortcuts
-function tfm() {
-    if [[ "$@" == "workspace show" ]]; then
-        TIME_CMD=""
-    else
-        TIME_CMD="time"
-    fi
-    AWS_PROFILE=${AWS_PROFILE:-sandbox} $TIME_CMD terraform -chdir=infra $@
-}
-function _plan() {
-    profile=${1:-sandbox}
-    workspace=$(tfm workspace show)
-    var_file=${workspace}.tfvars
-    AWS_PROFILE=$profile tfm plan -refresh=false -var-file=$var_file -out /tmp/${workspace}.plan $@
-}
-function _planapply() {
-    profile=${1:-sandbox}
-    workspace=$(tfm workspace show)
-    var_file=${workspace}.tfvars
-    AWS_PROFILE=$profile tfm apply -refresh=false -var-file=$var_file -auto-approve
-}
-function plan() {
-    profile=${1:-sandbox}
-    workspace=$(tfm workspace show)
-    var_file=${workspace}.tfvars
-    AWS_PROFILE=$profile tfm plan -var-file=$var_file -out /tmp/${workspace}.plan
-}
-function planapply() {
-    profile=${1:-sandbox}
-    workspace=$(tfm workspace show)
-    var_file=${workspace}.tfvars
-    AWS_PROFILE=$profile tfm apply -var-file=$var_file -auto-approve
-}
-function tapply() {
-    profile=${1:-sandbox}
-    AWS_PROFILE=$profile tfm apply /tmp/$(tfm workspace show).plan
-}
-function docker_login() {
-  AWS_PROFILE=${1:-default}
-  echo "Logging into ECR with profile '$AWS_PROFILE'"
-  ACCOUNT_ID=$(AWS_PROFILE=$AWS_PROFILE aws sts get-caller-identity --query Account --output text)
-  REPO=$ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com
-  AWS_PROFILE=$AWS_PROFILE aws ecr get-login-password | docker login --username AWS --password-stdin $REPO
-}
+# Format all json files in a directory or a single file if $1 points to file inplace.
 function format_json() {
-    # Format all json files in a directory or a single file if $1 points to file inplace.
     if [ -d "$1" ]; then
         # outer quote is important to turn into array.
         files=( $(ag -l --nocolor --column -g "\.json" $1) )
@@ -338,13 +262,7 @@ fzf-git-branch() {
 # fi
 # TODO how to make this work for zsh on ubuntu?
 
-if [ -v BASH ]; then
-    # bind Alt-G to search for git branches in locally checked out branches. Must happen after sourcing ble.sh.
-    bind -x '"\eg": fzf-git-branch'
-    # blesh completion for bash shells (only posix)
-    [[ $- == *i* ]] && source /usr/share/blesh/ble.sh
-    [[ $- == *i* ]] && source ~/.local/share/blesh/ble.sh
-elif [ -v ZSH_VERSION ]; then
+if [ -v ZSH_VERSION ]; then
     # Package manager for zsh
     ANTIGEN=/opt/homebrew/share/antigen/antigen.zsh
     if [[ -f $ANTIGEN ]]; then

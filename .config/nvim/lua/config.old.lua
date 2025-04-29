@@ -143,8 +143,6 @@ local on_attach = function(client, bufnr)
 end
 
 local home = os.getenv("HOME")
--- require("chatgpt").setup({
--- })
 
 local lsp_flags = {
   -- This is the default in Nvim 0.7+
@@ -275,7 +273,7 @@ require("trouble").setup()
 -- End LSP setup. --
 
 -- CoPilot
-require("CopilotChat").setup {
-  -- debug = true, -- Enable debugging
-  -- See Configuration section for rest
-}
+-- require("CopilotChat").setup {
+--   -- debug = true, -- Enable debugging
+--   -- See Configuration section for rest
+-- }

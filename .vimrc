@@ -30,30 +30,24 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'neovim/nvim-lspconfig'
-Plug 'folke/trouble.nvim'
-Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
-" For vsnip users.
 Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/vim-vsnip'
-Plug 'simrat39/rust-tools.nvim'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'onsails/lspkind.nvim'
 Plug 'rafamadriz/friendly-snippets'
-Plug 'jose-elias-alvarez/null-ls.nvim'
+" Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'jparise/vim-graphql'
-" Purescript
-Plug 'purescript-contrib/purescript-vim'
-" CoPilot
-Plug 'github/copilot.vim'
-" CoPilot Chat
-" Plug 'zbirenbaum/copilot.lua'
-Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'main' }
 " Jsonnet support
 Plug 'google/vim-jsonnet'
 " CSV support
 Plug 'chrisbra/csv.vim'
+" Diagnostics
+Plug 'folke/trouble.nvim'
 call plug#end()
 
 if has('nvim')
@@ -147,7 +141,6 @@ nnoremap <leader>q :cclose<CR>
 nnoremap <leader>z :pclose<CR>
 nnoremap <leader>ln :se nu!<CR>
 nnoremap <leader>ls :NvimTreeToggle<CR>
-nnoremap <leader>tt :Trouble diagnostics toggle<CR>
 nnoremap <leader>lf :NvimTreeFindFile<CR>
 nnoremap <leader>hh <C-w>h
 nnoremap <leader>ll <C-w>l

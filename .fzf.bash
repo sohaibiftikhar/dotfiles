@@ -7,3 +7,4 @@ if [[ -v BASH ]]; then
 elif [[ -v ZSH_VERSION ]]; then
     source <(fzf --zsh)
 fi
+source ~/fzf-at-google.zsh
